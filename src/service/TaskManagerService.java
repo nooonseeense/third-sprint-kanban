@@ -1,5 +1,6 @@
 package service;
 
+import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 import java.util.HashMap;
@@ -16,8 +17,15 @@ public class TaskManagerService {
         tasks.put(taskId, task);
     }
 
-    public void addSubTasks(Subtask subtask) {
-
+    public void addSubTask(Subtask subtask) {
+        int subtaskId = generator++;
+        subtask.setId(subtaskId);
+        subTasks.put(subtaskId, subtask);
     }
 
+    public void addEpic(Epic epic) {
+        int epicId = generator++;
+        epic.setId(epicId);
+        epics.put(epicId,epic);
+    }
 }
