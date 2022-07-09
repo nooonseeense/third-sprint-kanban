@@ -3,7 +3,7 @@ package tasks;
 import constants.Status;
 
 public class Subtask extends Task {
-    private int epicId;
+    private int epicId; // хранится id EPIC
 
     public Subtask(String name, String description, Status status, int epicId) {
         super(name, description, status);
