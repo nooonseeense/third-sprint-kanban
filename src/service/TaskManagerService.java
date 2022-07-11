@@ -7,42 +7,41 @@ import tasks.Task;
 import java.util.HashMap;
 
 public class TaskManagerService { // Сюда записываем все созданные задачи
-    DataManagement dataManagement = new DataManagement();
+    protected HashMap<Integer, Task> tasks = new HashMap<>(); // Здесь будет записан id и задачи
+    protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected HashMap<Integer, Epic> epics = new HashMap<>();
     private int generator = 0;
 //******************************* 1. ДОБАВЛЕНИЕ ЗАДАЧ(СОЗДАНИЕ) В HashMap<Integer, Task> С УНИКАЛЬНЫМ ID ***************
     // ЭТИ МЕТОДЫ БУДУТ СОДЕРЖАТЬ ОСНОВНУЮ ЛОГИКУ ПО РАБОТЕ С БД
     public void addTask(Task task) {
         int taskId = generator++;
         task.setId(taskId);
-        dataManagement.tasks.put(taskId, task);
+        tasks.put(taskId, task);
     }
 
     public void addEpic(Epic epic) {
         int epicId = generator++;
         epic.setId(epicId);
-        dataManagement.epics.put(epicId, epic);
+        epics.put(epicId, epic);
     }
 
     public void addSubTask(Subtask subtask) {
         int epicId = subtask.getEpicId();
-        Epic epic = dataManagement.epics.get(epicId);
+        Epic epic = epics.get(epicId);
         if (epic == null) {
             return;
         } else { // сохраянем подзадачу
             int subtaskId = generator++;
             subtask.setId(subtaskId);
-            dataManagement.subtasks.put(subtaskId, subtask); // добавляем подзадачу в епик
-            addSubtask(subtaskId);
+            subtasks.put(subtaskId, subtask); // добавляем подзадачу в епик
+            epic.getSubtaskIds().add(subtaskId); // добавляем ИД САБТАСКА
             updateEpicStatus(epic); // определяем статус эпика | ПРИ УДАЛЕНИИ ТАК ЖН ОБНОВЛЯЕМ СТАТУС ЕПИКА
         }
     }
 //********************************* 2. ОБНОВЛЕНИЕ ЗАДАЧ ****************************************************************
 // Новая версия объекта с верным идентификатором передаётся в виде параметра.
     public void updateTask(Task task) {
-        dataManagement.tasks.put(task.getId(), task);
-    }
-    public void addSubtask(int subtaskId) {
-        dataManagement.subtaskIds.add(subtaskId);
+        tasks.put(task.getId(), task);
     }
 
 //********************************* 3. МЕТОДЫ ЗАДАЧ ********************************************************************
@@ -92,14 +91,14 @@ public class TaskManagerService { // Сюда записываем все соз
     }
     // 3.5 Обновление статуса Епика
     public void updateEpicStatus(Epic epic) {
-        if (dataManagement.epics.isEmpty()) {
+        if (epics.isEmpty()) {
             epic.setStatus(Status.NEW);
         } else {
             epic.setStatus(Status.IN_PROGRESS);
         }
-        if (dataManagement.epics.containsValue(Status.DONE)
-                && (!dataManagement.epics.containsValue(Status.NEW))
-                || (!dataManagement.epics.containsValue(Status.IN_PROGRESS))) {
+        if (epics.containsValue(Status.DONE)
+                && (!epics.containsValue(Status.NEW))
+                || (!epics.containsValue(Status.IN_PROGRESS))) {
             epic.setStatus(Status.DONE);
         }
     }

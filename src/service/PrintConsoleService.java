@@ -2,13 +2,14 @@ package service;
 import tasks.Task;
 import java.util.List;
 
-public class PrintConsoleService extends DataManagement {
+public class PrintConsoleService {
 
-    public List<Task> getTasks() {
-
-    }
+//    public List<Task> getTasks() {
+//
+//    }
 
     public void printTasks() {
+
 
     }
 
