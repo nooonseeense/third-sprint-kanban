@@ -1,8 +1,11 @@
 import constants.Status;
+import service.PrintConsoleService;
 import service.TaskManagerService;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
+import java.util.List;
 
 public class Main {
 
@@ -10,21 +13,29 @@ public class Main {
         TaskManagerService service = new TaskManagerService();
 
         Task task1 = new Task("Task 1", "Описание", Status.NEW);
-        Task task2 = new Task("Task 2", "Описание", Status.NEW);
+        Task task2 = new Task("Task 2", "Описание", Status.IN_PROGRESS);
 
         service.addTask(task1);
         service.addTask(task2);
 
-        Epic epic1 = new Epic("Построить дом", "Будем строить дом", Status.NEW);
-        Epic epic2 = new Epic("Сходить в магазин", "Будем строить дом", Status.NEW);
+        Epic epic1 = new Epic("Построить дом", "Купить бетон", Status.NEW);
+        Epic epic2 = new Epic("Сходить в магазин", "Купить хлеб", Status.NEW);
 
         service.addEpic(epic1);
         service.addEpic(epic2);
 
-        Subtask subtask1 = new Subtask("Заполнить бетон", "Описание", Status.NEW, epic1.getId());
-        Subtask subtask2 = new Subtask("Купить шампунь", "Описание", Status.NEW, epic2.getId());
+        Subtask subtask1 = new Subtask("Заполнить бетон", "Оп", Status.IN_PROGRESS, epic1.getId());
+        Subtask subtask2 = new Subtask("Купить шампунь", "Оп_2", Status.IN_PROGRESS, epic2.getId());
 
         service.addSubTask(subtask1);
         service.addSubTask(subtask2);
+
+        PrintConsoleService printConsoleService = new PrintConsoleService();
+
+        List<Task> tasks = service.getTasks();
+        List<Epic> epics = service.getEpics();
+
+        printConsoleService.printTasks(tasks);
+        printConsoleService.printEpics(epics);
     }
 }

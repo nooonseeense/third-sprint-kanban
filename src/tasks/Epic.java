@@ -13,4 +13,7 @@ public class Epic extends Task { // Хранятся просто номера
     public ArrayList<Integer> getSubtaskIds () {
         return subtaskIds;
     }
+    public Status getStatusEpic() {
+        return status;
+    }
 }
