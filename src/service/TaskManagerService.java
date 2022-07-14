@@ -4,12 +4,10 @@ import constants.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Flow;
 
 public class TaskManagerService { // Сюда записываем все созданные задачи
     private HashMap<Integer, Task> tasks = new HashMap<>(); // Здесь будет записан id и задачи
@@ -61,36 +59,42 @@ public class TaskManagerService { // Сюда записываем все соз
     }
 
     // 3.2 Удаление всех задач в мапе task
-    public void taskAllDelete(HashMap<Integer, Task> tasks) {
-
+    public void taskAllDelete() {
+       tasks.clear();
     }
 
-    public void epicAllDelete(HashMap<Integer, Task> epics) {
-
+    public void epicAllDelete() {
+        epics.clear();
     }
 
-    public void subtaskAllDelete(HashMap<Integer, Task> subtasks) {
-
+    public void subtaskAllDelete(Epic epic) {
+        subtasks.clear();
+        updateEpicStatus(epic);
     }
     // 3.3 Получение по идентификатору
-    public void getIdTask(HashMap<Integer, Task> tasks) {
-
+    public void getTaskById(int id) {
+        for (Task values : tasks.values()) {
+            if (values.getId() == id) {
+                System.out.println(tasks.get(id));
+            }
+        }
     }
 
-    public void getIdEpic(HashMap<Integer, Task> epics) {
-    // Получение списка всех подзадач определённого эпика.
+    public void getEpicById(Epic epic) {
+        int id = epic.getId();
+        // Получение списка всех подзадач определённого эпика.
     }
 
     // 3.4 Удаление задач по идентефикатороу
-    public void deleteTaskInIds(HashMap<Integer, Task> tasks) {
+    public void deleteTaskInIds() {
 
     }
 
-    public void deleteEpicInIds(HashMap<Integer, Task> epics) {
+    public void deleteEpicInIds() {
 
     }
 
-    public void deleteSubTaskInIds(HashMap<Integer, Task> subtasks) {
+    public void deleteSubTaskInIds() {
 
     }
     // 3.5 Обновление статуса Епика
