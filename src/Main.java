@@ -24,7 +24,7 @@ public class Main {
         service.addEpic(epic1);
         service.addEpic(epic2);
 
-        Subtask subtask1 = new Subtask("Заполнить бетон", "Оп", Status.IN_PROGRESS, epic1.getId());
+        Subtask subtask1 = new Subtask("Заполнить бетон", "Оп", Status.DONE, epic1.getId());
         Subtask subtask2 = new Subtask("Купить шампунь", "Оп_2", Status.IN_PROGRESS, epic2.getId());
 
         service.addSubTask(subtask1);
@@ -37,5 +37,8 @@ public class Main {
 
         printConsoleService.printTasks(tasks);
         printConsoleService.printEpics(epics);
+
+        service.subtaskAllDelete(epic1);
+        service.getTaskById(1);
     }
 }
