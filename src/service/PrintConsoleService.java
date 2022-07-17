@@ -24,7 +24,7 @@ public class PrintConsoleService {
         System.out.println(REPEATED);
     }
 
-    public void printSubTasksInEpic(Epic epic, List<Subtask> subtask) {
+    public void (Epic epic, List<Subtask> subtask) {
         ArrayList<Subtask> values = new ArrayList<>();
 
         for (Subtask value : subtask) {
