@@ -42,7 +42,7 @@ public class TaskManagerService { // Сюда записываем все соз
         }
     }
 //********************************* 2. ОБНОВЛЕНИЕ ЗАДАЧ ****************************************************************
-    public void updateTask(Task task, int id) { // Новая версия объекта с верным идентификатором передаётся в виде параметра.
+    public void updateTask(Task task, int id) { //New версия объекта с верным id передаётся в виде параметра.
         if (task.getId() == id) {
             tasks.put(id, task);
         }
@@ -74,7 +74,6 @@ public class TaskManagerService { // Сюда записываем все соз
         Collection<Subtask> values = subtasks.values();
         return new ArrayList<>(values);
     }
-
     // 3.2 Удаление всех задач в мапе task
     public void taskAllDelete() {
        tasks.clear();
@@ -144,7 +143,7 @@ public class TaskManagerService { // Сюда записываем все соз
         }
     }
     // 3.5 Обновление статуса Епика
-    public void updateEpicStatus(Epic epic) {
+    private void updateEpicStatus(Epic epic) {
         if (epics.isEmpty()) {
             epic.setStatus(Status.NEW);
         } else {
