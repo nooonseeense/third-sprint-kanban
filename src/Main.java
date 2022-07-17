@@ -34,11 +34,22 @@ public class Main {
 
         List<Task> tasks = service.getTasks();
         List<Epic> epics = service.getEpics();
+        List<Subtask> subtasks = service.getSubtask();
 
         printConsoleService.printTasks(tasks);
         printConsoleService.printEpics(epics);
 
-        service.subtaskAllDelete(epic1);
         service.getTaskById(1);
+        service.getEpicById(2);
+        service.getSubtaskById(4);
+
+        Task task3 = new Task("Task 3 (ОБНОВЛЕННЫЙ)", "Описание)", Status.NEW);
+        service.updateTask(task3, 0);
+
+
+
+        service.deleteSubTaskInIds(epic1, 4);
+
+        printConsoleService.printSubTasksInEpic(epic1, subtasks);
     }
 }
