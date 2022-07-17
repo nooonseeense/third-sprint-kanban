@@ -16,8 +16,7 @@ public class TaskManagerService { // Сюда записываем все соз
 
     private int generator = 0;
 //******************************* 1. ДОБАВЛЕНИЕ ЗАДАЧ(СОЗДАНИЕ) В HashMap<Integer, Task> С УНИКАЛЬНЫМ ID ***************
-    // ЭТИ МЕТОДЫ БУДУТ СОДЕРЖАТЬ ОСНОВНУЮ ЛОГИКУ ПО РАБОТЕ С БД
-    public void addTask(Task task) {
+    public void addTask(Task task) {   // ЭТИ МЕТОДЫ БУДУТ СОДЕРЖАТЬ ОСНОВНУЮ ЛОГИКУ ПО РАБОТЕ С БД
         int taskId = generator++;
         task.setId(taskId);
         tasks.put(taskId, task);
@@ -43,9 +42,22 @@ public class TaskManagerService { // Сюда записываем все соз
         }
     }
 //********************************* 2. ОБНОВЛЕНИЕ ЗАДАЧ ****************************************************************
-// Новая версия объекта с верным идентификатором передаётся в виде параметра.
-    public void updateTask(Task task) {
-        tasks.put(task.getId(), task);
+    public void updateTask(Task task, int id) { // Новая версия объекта с верным идентификатором передаётся в виде параметра.
+        if (task.getId() == id) {
+            tasks.put(id, task);
+        }
+    }
+
+    public void updateEpic(Epic epic, int id) {
+        if (epic.getId() == id) {
+            epics.put(id, epic);
+        }
+    }
+
+    public void updateSubtaskId(Subtask subtask, int id) {
+        if (subtask.getId() == id) {
+            subtasks.put(id, subtask);
+        }
     }
 //********************************* 3. МЕТОДЫ ЗАДАЧ ********************************************************************
     public List<Epic> getEpics() {
@@ -55,6 +67,11 @@ public class TaskManagerService { // Сюда записываем все соз
 
     public List<Task> getTasks() {
         Collection<Task> values = tasks.values();
+        return new ArrayList<>(values);
+    }
+
+    public List<Subtask> getSubtask() {
+        Collection<Subtask> values = subtasks.values();
         return new ArrayList<>(values);
     }
 
@@ -73,29 +90,58 @@ public class TaskManagerService { // Сюда записываем все соз
     }
     // 3.3 Получение по идентификатору
     public void getTaskById(int id) {
-        for (Task values : tasks.values()) {
-            if (values.getId() == id) {
-                System.out.println(tasks.get(id));
+        for (Task value : tasks.values()) {
+            if (value.getId() == id) {
+                System.out.println("Таск с " + id + " id: " + tasks.get(id));
             }
         }
     }
 
-    public void getEpicById(Epic epic) {
-        int id = epic.getId();
-        // Получение списка всех подзадач определённого эпика.
+    public void getEpicById(int id) {
+        for (Epic value : epics.values()) {
+            if (value.getId() == id) {
+                System.out.println("Епик с " + id + " id: " + epics.get(id));
+            }
+        }
     }
 
+    public void getSubtaskById(int id) {
+        for (Subtask value : subtasks.values()) {
+            if (value.getId() == id) {
+                System.out.println("Сабтаск с " + id + " id: " + subtasks.get(id));
+            }
+        }
+    }
     // 3.4 Удаление задач по идентефикатороу
-    public void deleteTaskInIds() {
-
+    public void deleteTaskInIds(int id) {
+        ArrayList<Integer> taskIds = new ArrayList<>();
+        for (Task value : tasks.values()) {
+            taskIds.add(value.getId());
+        }
+        if (taskIds.contains(id)) {
+            tasks.remove(id);
+        }
     }
 
-    public void deleteEpicInIds() {
-
+    public void deleteEpicInIds(int id) {
+        ArrayList<Integer> epicIds = new ArrayList<>();
+        for (Epic value : epics.values()) {
+            epicIds.add(value.getId());
+        }
+        if (epicIds.contains(id)) {
+            epics.remove(id);
+        }
     }
 
-    public void deleteSubTaskInIds() {
-
+    public void deleteSubTaskInIds(Epic epic, int id) { // [!] - НЕ ЗАБЫТЬ ПРО СМЕНУ СТАТУСА ЕПИКА
+        ArrayList<Integer> subtaskIds = new ArrayList<>();
+        for (Task value : subtasks.values()) {
+            subtaskIds.add(value.getId());
+        }
+        if (subtaskIds.contains(id)) {
+            subtasks.remove(id);
+            updateEpicStatus(epic);
+        }
     }
     // 3.5 Обновление статуса Епика
     public void updateEpicStatus(Epic epic) {
