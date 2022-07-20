@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PrintConsoleService {
     private final String REPEATED = new String(new char[120]).replace("\0", "=");
-// 3.1 Получение списка всех задач мапы task
+
     public void printTasks(List<Task> tasks) {
         System.out.println(REPEATED + "\nТаски:");
         for (Task values : tasks) {

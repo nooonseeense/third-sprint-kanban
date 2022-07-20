@@ -58,7 +58,7 @@ public class Main {
         tasks.add(task3);
         tasks.add(task4);
 
-        service.deleteSubTaskInIds(epic1, 4);
+        service.deleteSubTaskInIds(4);
         printConsoleService.printSubTasksInEpic(epic1, subtasks);
 
         service.deleteEpicInIds(2);
