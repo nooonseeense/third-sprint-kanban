@@ -50,11 +50,8 @@ public class TaskManagerService {
 
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
-        for (Epic value : epics.values()) {
-            if (subtask.getEpicId() == value.getId()) {
-                updateEpicStatus(value);
-            }
-        }
+        Epic epic = epics.get(subtask.getEpicId());
+        updateEpicStatus(epic);
     }
 
     public List<Epic> getEpics() {
@@ -114,10 +111,9 @@ public class TaskManagerService {
     }
 
     public void deleteSubTaskInIds(int id) {
-        Epic epic = epics.get(id);
-        for (int subtaskId : epic.getSubtaskIds()) {
-            subtasks.remove(subtaskId);
-        }
+        Subtask subtask = subtasks.get(id);
+        Epic epic = getEpicById(subtask.getEpicId());
+        epic.getSubtaskIds().remove(id);
         subtasks.remove(id);
         updateEpicStatus(epic);
     }
@@ -139,7 +135,8 @@ public class TaskManagerService {
                         counterNew++;
                         break;
                     case IN_PROGRESS:
-                        break;
+                        epic.setStatus(Status.IN_PROGRESS);
+                        return;
                     case DONE:
                         counterDone++;
                         break;
