@@ -110,10 +110,10 @@ public class TaskManagerService {
         epics.remove(id);
     }
 
-    public void deleteSubTaskInIds(int id) {
-        Subtask subtask = subtasks.get(id);
-        Epic epic = getEpicById(subtask.getEpicId());
-        epic.getSubtaskIds().remove(id);
+    public void deleteSubTaskInIds(int id) { // Удалить сабтаск по id (5)
+        Subtask subtask = subtasks.get(id); // Вытаскиваем в переменную нужный нам объект [ВЕРНО]
+        Epic epic = getEpicById(subtask.getEpicId()); // Вытаскиваем в переменную связанный ЕПИК С САБТАСКОМ [ВЕРНО]
+        epic.getSubtaskIds().remove(subtask);
         subtasks.remove(id);
         updateEpicStatus(epic);
     }
@@ -128,6 +128,10 @@ public class TaskManagerService {
 
             for (int i = 0; i < epic.getSubtaskIds().size(); i++) {
                 subtasksNew.add(subtasks.get(epic.getSubtaskIds().get(i)));
+            }
+            if (!subtasks.isEmpty()) {
+                epic.setStatus(Status.NEW);
+                return;
             }
             for (Subtask value : subtasksNew) {
                 switch (value.getStatus()) {
