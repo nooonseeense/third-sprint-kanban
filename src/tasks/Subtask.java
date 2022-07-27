@@ -3,7 +3,7 @@ package tasks;
 import constants.Status;
 
 public class Subtask extends Task {
-    private int epicId;
+    private final int epicId;
 
     public Subtask(String name, String description, Status status, int epicId) {
         super(name, description, status);
@@ -13,7 +13,6 @@ public class Subtask extends Task {
     public int getEpicId() {
         return epicId;
     }
-
     @Override
     public String toString() {
         return "Subtask{" +

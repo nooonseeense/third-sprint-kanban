@@ -1,6 +1,6 @@
 import constants.Status;
-import service.PrintConsoleService;
-import service.TaskManagerService;
+import service.PrintConsole;
+import manager.TaskManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -10,7 +10,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManagerService service = new TaskManagerService();
+        TaskManager service = new TaskManager();
 
         Task task1 = new Task("Task 1", "Описание", Status.NEW);
         Task task2 = new Task("Task 2", "Описание", Status.IN_PROGRESS);
@@ -34,15 +34,15 @@ public class Main {
         service.addSubTask(subtask1);
         service.addSubTask(subtask2);
 
-        PrintConsoleService printConsoleService = new PrintConsoleService();
+        PrintConsole printConsole = new PrintConsole();
 
         List<Task> tasks = service.getTasks();
         List<Epic> epics = service.getEpics();
         List<Subtask> subtasks = service.getSubtask();
 
-        printConsoleService.printTasks(tasks);
-        printConsoleService.printEpics(epics);
-        printConsoleService.printSubTasksInEpic(epic4, subtasks);
+        printConsole.printTasks(tasks);
+        printConsole.printEpics(epics);
+        printConsole.printSubTasksInEpic(epic4, subtasks);
 
         service.getTaskById(1);
         service.getEpicById(2);
@@ -59,10 +59,8 @@ public class Main {
         tasks.add(task4);
 
         service.deleteSubTaskInIds(5);
-        printConsoleService.printSubTasksInEpic(epic1, subtasks);
+        printConsole.printSubTasksInEpic(epic1, subtasks);
         service.deleteEpicInIds(2);
-
-
 
     }
 }

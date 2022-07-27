@@ -1,4 +1,4 @@
-package service;
+package manager;
 
 import constants.Status;
 import tasks.Epic;
@@ -6,10 +6,10 @@ import tasks.Subtask;
 import tasks.Task;
 import java.util.*;
 
-public class TaskManagerService {
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
+public class TaskManager {
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
 
     private int generator = 0;
 
@@ -135,15 +135,12 @@ public class TaskManagerService {
             }
             for (Subtask value : subtasksNew) {
                 switch (value.getStatus()) {
-                    case NEW:
-                        counterNew++;
-                        break;
-                    case IN_PROGRESS:
+                    case NEW -> counterNew++;
+                    case IN_PROGRESS -> {
                         epic.setStatus(Status.IN_PROGRESS);
                         return;
-                    case DONE:
-                        counterDone++;
-                        break;
+                    }
+                    case DONE -> counterDone++;
                 }
             }
             if (counterDone == subtasksNew.size()) {
@@ -156,4 +153,3 @@ public class TaskManagerService {
         }
     }
 }
-

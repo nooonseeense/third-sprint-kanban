@@ -6,7 +6,7 @@ import tasks.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrintConsoleService {
+public class PrintConsole {
     static final String REPEATED = new String(new char[120]).replace("\0", "=");
 
     public void printTasks(List<Task> tasks) {
