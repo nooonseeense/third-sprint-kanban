@@ -1,7 +1,6 @@
 package manager;
 
 public class Managers { // Утилитарный класс
-
     private static final TaskManager taskManager = new InMemoryTaskManager();
 
     public static HistoryManager getDefaultHistory() {
