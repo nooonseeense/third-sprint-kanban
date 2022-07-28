@@ -13,11 +13,13 @@ public class Main {
 
     public static void main(String[] args) {
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
-        HistoryManager historyManager = Managers.getHistoryManagerMemory(); // утилитарный класс
+        HistoryManager historyManager = Managers.getDefaultHistory();
 
         Task task1 = new Task("Task 1", "Описание", Status.NEW);
         Task task2 = new Task("Task 2", "Описание", Status.IN_PROGRESS);
 
+        historyManager.add(task1);
+        historyManager.add(task2);
         inMemoryTaskManager.addTask(task1);
         inMemoryTaskManager.addTask(task2);
 

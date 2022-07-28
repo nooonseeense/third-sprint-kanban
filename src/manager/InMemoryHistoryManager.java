@@ -9,12 +9,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        // some logic
+        tasksHistory.add(task);
     }
 
     @Override
     public List<Task> getHistory() {
-        // some logic
+        // запись в историю
         return tasksHistory;
     }
 }

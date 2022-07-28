@@ -158,12 +158,15 @@ public class InMemoryTaskManager implements TaskManager {
             }
             for (Subtask value : subtasksNew) {
                 switch (value.getStatus()) {
-                    case NEW -> counterNew++;
-                    case IN_PROGRESS -> {
+                    case NEW:
+                        counterNew++;
+                        break;
+                    case IN_PROGRESS:
                         epic.setStatus(Status.IN_PROGRESS);
                         return;
-                    }
-                    case DONE -> counterDone++;
+                    case DONE:
+                        counterDone++;
+                        break;
                 }
             }
             if (counterDone == subtasksNew.size()) {
