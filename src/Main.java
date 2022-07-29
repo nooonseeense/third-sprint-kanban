@@ -21,15 +21,9 @@ public class Main {
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
-
-//        inMemoryTaskManager.addTask(task1);
-//        inMemoryTaskManager.addTask(task2);
-
         Epic epic1 = new Epic("Построить дом", "Купить бетон");
         Epic epic2 = new Epic("Сходить в магазин", "Купить хлеб");
         Epic epic4 = new Epic("Откопать сокровище", "Особо ценное");
-
-
 
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
@@ -39,9 +33,9 @@ public class Main {
         Subtask subtask2 = new Subtask("Купить шампунь", "Оп_2", Status.IN_PROGRESS, epic2.getId());
         Subtask subtask4 = new Subtask("Оборвать веревку", "()", Status.IN_PROGRESS, epic4.getId());
 
-        taskManager.updateSubtask(subtask4);
         taskManager.addSubTask(subtask1);
         taskManager.addSubTask(subtask2);
+        taskManager.addSubTask(subtask4);
 
         PrintConsole printConsole = new PrintConsole();
 
@@ -67,14 +61,15 @@ public class Main {
         tasks.add(task3);
         tasks.add(task4);
 
+        taskManager.deleteTaskInIds(0);// тут ошибка
+        taskManager.deleteEpicInIds(2); // тут ошибка
+        taskManager.deleteSubTaskInIds(6); // тут ошибка
 
-        //taskManager.deleteTaskInIds(0);// тут ошибка
-        //taskManager.deleteEpicInIds(2); // тут ошибка
-        //taskManager.deleteSubTaskInIds(4); // тут ошибка
-
+        System.out.println("test");
 
         printConsole.printSubTasksInEpic(epic1, subtasks);
-        taskManager.deleteEpicInIds(2);
+        printConsole.printTasks(tasks);
+        printConsole.printEpics(epics);
 
     }
 }

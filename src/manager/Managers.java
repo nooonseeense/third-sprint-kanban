@@ -7,7 +7,7 @@ public class Managers { // Утилитарный класс
         return new InMemoryHistoryManager();
     }
 
-    public static TaskManager getDefaultTask() {
+    public static TaskManager getDefaultTask() { // worked
         return taskManager;
     }
 }
