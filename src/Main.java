@@ -64,12 +64,5 @@ public class Main {
         taskManager.deleteTaskInIds(0);// тут ошибка
         taskManager.deleteEpicInIds(2); // тут ошибка
         taskManager.deleteSubTaskInIds(6); // тут ошибка
-
-        System.out.println("test");
-
-        printConsole.printSubTasksInEpic(epic1, subtasks);
-        printConsole.printTasks(tasks);
-        printConsole.printEpics(epics);
-
     }
 }
