@@ -6,7 +6,7 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final List<Task> tasksHistory = new LinkedList<>();
-    private int counterHistory = 0; // счетчик
+    private int counterHistory = 0;
 
     @Override
     public void add(Task task) {

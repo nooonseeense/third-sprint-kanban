@@ -1,13 +1,14 @@
 package manager;
 
-public class Managers { // Утилитарный класс
-    private static final TaskManager taskManager = new InMemoryTaskManager();
+public class Managers {
+    private static final TaskManager TASK_MANAGER = new InMemoryTaskManager();
+    private static final HistoryManager HISTORY_MANAGER = new InMemoryHistoryManager();
 
     public static HistoryManager getDefaultHistory() {
-        return new InMemoryHistoryManager();
+        return HISTORY_MANAGER;
     }
 
     public static TaskManager getDefaultTask() {
-        return taskManager;
+        return TASK_MANAGER;
     }
 }

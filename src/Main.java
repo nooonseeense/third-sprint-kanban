@@ -1,6 +1,5 @@
 import constants.Status;
 import manager.HistoryManager;
-import manager.InMemoryTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import service.PrintConsole;
@@ -14,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefaultTask();
-
+        HistoryManager historyManager = Managers.getDefaultHistory();
 
         Task task1 = new Task("Task 1", "Описание", Status.NEW);
         Task task2 = new Task("Task 2", "Это Task2", Status.IN_PROGRESS);
@@ -48,15 +47,17 @@ public class Main {
         printConsole.printEpics(epics);
         printConsole.printSubTasksInEpic(epic4, subtasks);
 
-        // Тестируем метод getHistory();
+        //System.out.println("\n----------Тестируем метод getHistory()--------------\n");
+
         taskManager.getTaskById(0);
-        System.out.println(taskManager.getHistory());
+        System.out.println(historyManager.getHistory());
 
         taskManager.getEpicById(2);
-        System.out.println(taskManager.getHistory());
+        System.out.println(historyManager.getHistory());
 
         taskManager.getSubtaskById(6);
-        System.out.println(taskManager.getHistory());
+        System.out.println(historyManager.getHistory());
+
 
 
 //        Task task3 = new Task("Task 3 (ОБНОВЛЕННЫЙ)", "(Описание)", Status.NEW);
