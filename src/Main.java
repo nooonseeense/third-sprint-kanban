@@ -15,8 +15,9 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefaultTask();
 
+
         Task task1 = new Task("Task 1", "Описание", Status.NEW);
-        Task task2 = new Task("Task 2", "Описание", Status.IN_PROGRESS);
+        Task task2 = new Task("Task 2", "Это Task2", Status.IN_PROGRESS);
 
         taskManager.addTask(task1);
         taskManager.addTask(task2);
@@ -47,22 +48,30 @@ public class Main {
         printConsole.printEpics(epics);
         printConsole.printSubTasksInEpic(epic4, subtasks);
 
-        taskManager.getTaskById(1);
+        // Тестируем метод getHistory();
+        taskManager.getTaskById(0);
+        System.out.println(taskManager.getHistory());
+
         taskManager.getEpicById(2);
-        taskManager.getSubtaskById(4);
+        System.out.println(taskManager.getHistory());
 
-        Task task3 = new Task("Task 3 (ОБНОВЛЕННЫЙ)", "(Описание)", Status.NEW);
-        Task task4 = new Task("Task 4 (ОБНОВЛЕННЫЙ_2)", "(Описание_2)", Status.NEW);
+        taskManager.getSubtaskById(6);
+        System.out.println(taskManager.getHistory());
 
-        task3.setId(task2.getId());
-        taskManager.updateTask(task3);
-        taskManager.updateTask(task4);
 
-        tasks.add(task3);
-        tasks.add(task4);
+//        Task task3 = new Task("Task 3 (ОБНОВЛЕННЫЙ)", "(Описание)", Status.NEW);
+//        Task task4 = new Task("Task 4 (ОБНОВЛЕННЫЙ_2)", "(Описание_2)", Status.NEW);
+//
+//        task3.setId(task2.getId());
+//        taskManager.updateTask(task3);
+//        taskManager.updateTask(task4);
+//
+//        tasks.add(task3);
+//        tasks.add(task4);
 
-        taskManager.deleteTaskInIds(0);// тут ошибка
-        taskManager.deleteEpicInIds(2); // тут ошибка
-        taskManager.deleteSubTaskInIds(6); // тут ошибка
+//        taskManager.deleteTaskInIds(0);
+//        taskManager.deleteEpicInIds(2);
+//        taskManager.deleteSubTaskInIds(6);
+
     }
 }
