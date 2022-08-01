@@ -48,19 +48,14 @@ public class Main {
 
         System.out.println("\n----------Тестируем метод getHistory()--------------\n");
 
-        //taskManager.getTaskById(0);
-        //System.out.println(historyManager.getHistory());
+        taskManager.getTaskById(0);
+        System.out.println(taskManager.getHistory());
 
-        Managers.getDefaultTask().getTaskById(0);
-        Managers.getDefaultHistory().getHistory();
+        taskManager.getEpicById(2);
+        System.out.println(taskManager.getHistory());
 
-
-
-        //taskManager.getEpicById(2);
-        //System.out.println(historyManager.getHistory());
-
-        //taskManager.getSubtaskById(6);
-        //System.out.println(historyManager.getHistory());
+        taskManager.getSubtaskById(6);
+        System.out.println(taskManager.getHistory());
 
 
 
@@ -74,7 +69,7 @@ public class Main {
 //        tasks.add(task3);
 //        tasks.add(task4);
 
-//        taskManager.deleteTaskInIds(0);
+       taskManager.deleteTaskInIds(0);
 //        taskManager.deleteEpicInIds(2);
 //        taskManager.deleteSubTaskInIds(6);
 
