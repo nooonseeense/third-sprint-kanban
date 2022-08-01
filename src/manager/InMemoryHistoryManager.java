@@ -14,10 +14,11 @@ public class InMemoryHistoryManager implements HistoryManager {
             return;
         }
 
-        tasksHistory.add(task);
         if (tasksHistory.size() == MAX_LIST_SIZE) {
             tasksHistory.remove(0);
         }
+
+        tasksHistory.add(task);
     }
 
     @Override
