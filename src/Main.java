@@ -14,6 +14,8 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefaultTask();
 
+        System.out.println("\n----------_SPRINT3_--------------\n");
+
         Task task1 = new Task("Task 1", "Описание", Status.NEW);
         Task task2 = new Task("Task 2", "Это Task2", Status.IN_PROGRESS);
 
@@ -46,7 +48,7 @@ public class Main {
         printConsole.printEpics(epics);
         printConsole.printSubTasksInEpic(epic4, subtasks);
 
-        System.out.println("\n----------Тестируем метод getHistory()--------------\n");
+        System.out.println("\n----------_SPRINT4_--------------\n");
 
         taskManager.getTaskById(0);
         System.out.println(taskManager.getHistory());
@@ -57,21 +59,12 @@ public class Main {
         taskManager.getSubtaskById(6);
         System.out.println(taskManager.getHistory());
 
+        System.out.println("\n----------_SPRINT5_--------------\n");
 
+        taskManager.deleteTaskInIds(0);
+        taskManager.deleteEpicInIds(2);
+        taskManager.deleteSubTaskInIds(6);
 
-//        Task task3 = new Task("Task 3 (ОБНОВЛЕННЫЙ)", "(Описание)", Status.NEW);
-//        Task task4 = new Task("Task 4 (ОБНОВЛЕННЫЙ_2)", "(Описание_2)", Status.NEW);
-//
-//        task3.setId(task2.getId());
-//        taskManager.updateTask(task3);
-//        taskManager.updateTask(task4);
-//
-//        tasks.add(task3);
-//        tasks.add(task4);
-
-       taskManager.deleteTaskInIds(0);
-//        taskManager.deleteEpicInIds(2);
-//        taskManager.deleteSubTaskInIds(6);
-
+        System.out.println(taskManager.getHistory());
     }
 }
