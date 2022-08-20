@@ -1,79 +1,41 @@
 package manager;
 
 import tasks.Task;
+import util.CustomLinkedList;
+import util.CustomNode;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final Map<Integer, Node> nodesMap = new HashMap<>(); // храним порядок вызовов
-    private final HandMadeLinkedList<Task> tasksList = new HandMadeLinkedList<>(); //  храним все задачи
-
-    private final List<Task> tasksHistory = new LinkedList<>(); // удаляем после реализации своего листа
-    private static final int MAX_LIST_SIZE = 10;
+    private final CustomLinkedList<Task> customList = new CustomLinkedList<>();
+    private final Map<Integer, CustomNode<Task>> nodesMap = new HashMap<>();
 
     @Override
     public void add(Task task) {
-        // linkLast();
-        // removeMode(o);
-        
-        if (task == null) {
-            return;
-        }
-        if (tasksHistory.size() == MAX_LIST_SIZE) {
-            tasksHistory.remove(0);
-        }
-        tasksHistory.add(task);
+        remove(task.getId());
+        customList.linkLast(task);
+        nodesMap.put(task.getId(), customList.getTail());
     }
 
     @Override
     public void remove(int id) {
-        tasksHistory.removeIf(taskNext -> taskNext.getId() == id);
+        customList.removeNode(id, getNodesMap());
     }
 
     @Override
     public List<Task> getHistory() {
-        return List.copyOf(tasksHistory);
-    }
+        List<Task> tasksList = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "InMemoryHistoryManager{" +
-                "tasksHistory=" + tasksHistory +
-                '}';
-    }
-
-    static class HandMadeLinkedList<T> {
-        private Node first;
-        private Node Last;
-
-        // private void linkLast() {} - добавляет задачу в конец двусвязного списка
-
-        // public List<Task> getTask() {} - должен собирать все задачи в обычный ArrayList
-
-        // public void removeNode(Node o) {} - принимает объект и вырезает его
-
-    }
-
-    static class Node {
-        protected Task task;
-        protected Node next;
-        protected Node prev;
-
-        public Node(Node prev, Task task, Node next) {
-            this.task = task;
-            this.next = next;
-            this.prev = prev;
+        for (CustomNode<Task> task : nodesMap.values()) {
+            tasksList.add(task.getTask());
         }
 
-        @Override
-        public String toString() {
-            return "Node{" +
-                    "task=" + task +
-                    ", prev=" + (prev != null ? prev.task : null) +
-                    ", next=" + (next != null ? next.task : null) +
-                    '}';
-        }
+        return List.copyOf(tasksList);
+    }
+
+    public Map<Integer, CustomNode<Task>> getNodesMap() {
+        return nodesMap;
     }
 }
