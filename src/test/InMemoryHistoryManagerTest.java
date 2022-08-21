@@ -6,7 +6,6 @@ class InMemoryHistoryManagerTest {
 
     @org.junit.jupiter.api.Test
     void testAdd() {
-
     }
 
     @org.junit.jupiter.api.Test

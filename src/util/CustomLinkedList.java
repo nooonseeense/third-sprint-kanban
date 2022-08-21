@@ -12,15 +12,21 @@ public class CustomLinkedList<Task> implements CustomList<Task> {
         final CustomNode<Task> newNode = new CustomNode<>(oldTail, element, null);
         tail = newNode;
 
-        if (oldTail == null)
+        if (oldTail == null) {
             head = newNode;
-        else
+        } else {
             oldTail.next = newNode;
+        }
     }
 
     @Override
     public void removeNode(int id, Map<Integer, CustomNode<Task>> nodesMap) {
         nodesMap.remove(id);
+    }
+
+    @Override
+    public void getTasks() {
+
     }
 
     public CustomNode<Task> getTail() {

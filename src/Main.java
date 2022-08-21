@@ -47,22 +47,34 @@ public class Main {
 
         System.out.println("\n----------_SPRINT4_--------------\n");
 
+        taskManager.getTaskById(0);
+        System.out.println(taskManager.getHistory());
+
+        taskManager.getTaskById(1);
+        System.out.println(taskManager.getHistory());
+
         taskManager.getEpicById(2);
         System.out.println(taskManager.getHistory());
 
         taskManager.getEpicById(3);
         System.out.println(taskManager.getHistory());
 
-        taskManager.getEpicById(2);
+        taskManager.getSubtaskById(4);
         System.out.println(taskManager.getHistory());
 
-        taskManager.getEpicById(3);
+        taskManager.getSubtaskById(5);
+        System.out.println(taskManager.getHistory());
+
+        taskManager.getSubtaskById(6);
         System.out.println(taskManager.getHistory());
 
         System.out.println("\n----------_SPRINT5_--------------\n");
 
         //taskManager.deleteEpicInIds(3);
-        taskManager.deleteEpicInIds(2);
+        //taskManager.deleteEpicInIds(2);
+        //taskManager.taskAllDelete();
+        //taskManager.epicAllDelete();
+        //taskManager.subtaskAllDelete();
 
         System.out.println(taskManager.getHistory());
     }
