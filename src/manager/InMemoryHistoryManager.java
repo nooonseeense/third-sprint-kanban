@@ -3,7 +3,6 @@ package manager;
 import tasks.Task;
 import util.CustomLinkedList;
 import util.CustomNode;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,17 +23,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        customList.removeNode(id, tasksHistory);
+        customList.removeNode(tasksHistory.get(id)); // 1. Закидываем Node в метод
+        tasksHistory.remove(id); // 2. Удаляем запись из tasksHistory
     }
 
     @Override
     public List<Task> getHistory() {
-        List<Task> tasksList = new ArrayList<>();
-
-        for (CustomNode<Task> task : tasksHistory.values()) {
-            tasksList.add(task.getTask());
-        }
-
-        return tasksList;
+        return customList.getTasks();
     }
 }

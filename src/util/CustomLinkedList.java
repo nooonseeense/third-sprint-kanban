@@ -1,6 +1,7 @@
 package util;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomLinkedList<Task> implements CustomList<Task> {
     private CustomNode<Task> head;
@@ -20,13 +21,38 @@ public class CustomLinkedList<Task> implements CustomList<Task> {
     }
 
     @Override
-    public void removeNode(int id, Map<Integer, CustomNode<Task>> nodesMap) {
-        nodesMap.remove(id);
+    public void removeNode(CustomNode<Task> node) {
+        if (node == null) {
+            return;
+        }
+        if (node.prev == null) {
+            head = node.next;
+        }
+        if (node.next == null) {
+            tail = node.prev;
+        }
+        if (node.prev != null && node.next != null) {
+            CustomNode<Task> left = node.prev;
+            CustomNode<Task> right = node.next;
+
+            left.next = right;
+            right.prev = left;
+
+            node.next = null;
+            node.prev = null;
+        }
     }
 
     @Override
-    public void getTasks() {
+    public List<Task> getTasks() {
+        List<Task> tasksList = new ArrayList<>();
+        CustomNode<Task> node = head;
 
+        while (node != null) {
+            tasksList.add(node.getTask());
+            node = node.next;
+        }
+        return tasksList;
     }
 
     public CustomNode<Task> getTail() {

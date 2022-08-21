@@ -1,13 +1,14 @@
 package util;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CustomList<Task> {
 
     void linkLast(Task task);
 
-    void removeNode(int id, Map<Integer, CustomNode<Task>> nodesMap);
+    void removeNode(CustomNode<Task> nodes);
 
-    void getTasks();
+    List<Task> getTasks();
 }
 
