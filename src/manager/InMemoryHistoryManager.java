@@ -23,8 +23,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        customList.removeNode(tasksHistory.get(id)); // 1. Закидываем Node в метод
-        tasksHistory.remove(id); // 2. Удаляем запись из tasksHistory
+        customList.removeNode(tasksHistory.remove(id));
     }
 
     @Override
