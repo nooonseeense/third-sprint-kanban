@@ -56,6 +56,9 @@ public class Main {
         taskManager.getEpicById(2);
         System.out.println(taskManager.getHistory());
 
+        taskManager.getTaskById(0);
+        System.out.println(taskManager.getHistory());
+
         taskManager.getEpicById(3);
         System.out.println(taskManager.getHistory());
 
@@ -63,6 +66,9 @@ public class Main {
         System.out.println(taskManager.getHistory());
 
         taskManager.getSubtaskById(5);
+        System.out.println(taskManager.getHistory());
+
+        taskManager.getEpicById(3);
         System.out.println(taskManager.getHistory());
 
         taskManager.getSubtaskById(6);
