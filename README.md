@@ -1,1 +1,1 @@
-# java-kanban
+# kanban
