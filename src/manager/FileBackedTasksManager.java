@@ -1,23 +1,30 @@
 package manager;
 
+import exceptions.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
-    String path;
+    private final File file;
 
-    public FileBackedTasksManager(String path) {
-        this.path = path;
+    public FileBackedTasksManager(File file) {
+        this.file = file;
     }
-
     /**
-     * Сохраняет текущее состояние менеджера в указанный файл
+     * Сохраняет текущее состояние менеджера в указанный файл при вызове методов добавления
      */
     private void save() {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))) {
 
+        } catch (IOException e) {
+            throw new ManagerSaveException();
+        }
     }
-
     /**
      * Сначала выполняется версия, унаследованная от предка, а затем метод save()
      */
