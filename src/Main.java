@@ -1,6 +1,7 @@
 import constants.Status;
+import manager.FileBackedTasksManager;
 import manager.Managers;
-import manager.TaskManager;
+import manager.TasksManager;
 import service.PrintConsole;
 import tasks.Epic;
 import tasks.Subtask;
@@ -11,35 +12,35 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefaultTask();
+        TasksManager tasksManager = Managers.getDefaultTask();
 
         System.out.println("\n----------_SPRINT3_--------------\n");
 
         Task task1 = new Task("Задача[1]", "Описание[1]", Status.NEW);
         Task task2 = new Task("Задача[2]", "Описание[2]", Status.IN_PROGRESS);
 
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
+        tasksManager.addTask(task1);
+        tasksManager.addTask(task2);
 
         Epic epic1 = new Epic("Епик[1]", "Описание[1]");
         Epic epic2 = new Epic("Епик[2]", "Описание[2]");
 
-        taskManager.addEpic(epic1);
-        taskManager.addEpic(epic2);
+        tasksManager.addEpic(epic1);
+        tasksManager.addEpic(epic2);
 
         Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[1]", Status.DONE, epic1.getId());
         Subtask subtask2 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS, epic1.getId());
         Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS, epic1.getId());
 
-        taskManager.addSubTask(subtask1);
-        taskManager.addSubTask(subtask2);
-        taskManager.addSubTask(subtask3);
+        tasksManager.addSubTask(subtask1);
+        tasksManager.addSubTask(subtask2);
+        tasksManager.addSubTask(subtask3);
 
         PrintConsole printConsole = new PrintConsole();
 
-        List<Task> tasks = taskManager.getTasks();
-        List<Epic> epics = taskManager.getEpics();
-        List<Subtask> subtasks = taskManager.getSubtask();
+        List<Task> tasks = tasksManager.getTasks();
+        List<Epic> epics = tasksManager.getEpics();
+        List<Subtask> subtasks = tasksManager.getSubtask();
 
         printConsole.printTasks(tasks);
         printConsole.printEpics(epics);
@@ -47,41 +48,50 @@ public class Main {
 
         System.out.println("\n----------_SPRINT4_--------------\n");
 
-        taskManager.getTaskById(0);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getTaskById(0);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getTaskById(1);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getTaskById(1);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getEpicById(2);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getEpicById(2);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getTaskById(0);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getTaskById(0);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getEpicById(3);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getEpicById(3);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getSubtaskById(4);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getSubtaskById(4);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getSubtaskById(5);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getSubtaskById(5);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getEpicById(3);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getEpicById(3);
+        System.out.println(tasksManager.getHistory());
 
-        taskManager.getSubtaskById(6);
-        System.out.println(taskManager.getHistory());
+        tasksManager.getSubtaskById(6);
+        System.out.println(tasksManager.getHistory());
 
         System.out.println("\n----------_SPRINT5_--------------\n");
 
-        //taskManager.deleteEpicInIds(3);
-        //taskManager.deleteEpicInIds(2);
-        //taskManager.taskAllDelete();
-        //taskManager.epicAllDelete();
-        //taskManager.subtaskAllDelete();
+        tasksManager.deleteEpicInIds(3);
+        tasksManager.deleteEpicInIds(2);
+        tasksManager.taskAllDelete();
+        tasksManager.epicAllDelete();
+        tasksManager.subtaskAllDelete();
 
-        System.out.println(taskManager.getHistory());
+        System.out.println("ДАННЫЕ УДАЛЕНЫ ИЗ ИСТОРИИ ПРОСМОТРА: " + tasksManager.getHistory());
+
+        System.out.println("\n----------_SPRINT6_--------------\n");
+
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager("data/data.csv");
+
+        fileBackedTasksManager.addTask(task1);
+        fileBackedTasksManager.addEpic(epic1);
+        fileBackedTasksManager.addSubTask(subtask1);
+
     }
 }
