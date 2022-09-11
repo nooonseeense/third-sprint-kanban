@@ -5,8 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 import java.util.List;
 
-public interface TaskManager {
-
+public interface TasksManager {
     void addTask(Task task);
     void addEpic(Epic epic);
     void addSubTask(Subtask subtask);
