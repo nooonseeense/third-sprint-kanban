@@ -14,7 +14,6 @@ class InMemoryHistoryManagerTest {
 
     @org.junit.jupiter.api.Test
     void testGetHistory() {
-
     }
 
     @org.junit.jupiter.api.Test
