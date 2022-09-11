@@ -1,6 +1,8 @@
 package tasks;
 
 import constants.Status;
+import constants.TaskType;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -18,7 +20,8 @@ public class Epic extends Task {
         subtaskIds.add(id);
     }
 
-    public TaskType getEpicType() {
+    @Override
+    public TaskType getTaskType() {
         return TaskType.EPIC;
     }
 
