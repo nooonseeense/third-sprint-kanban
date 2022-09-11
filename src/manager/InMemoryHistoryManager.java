@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final CustomLinkedList<Task> customList = new CustomLinkedList<>();
-    private final Map<Integer, CustomNode<Task>> tasksHistory = new HashMap<>();
+    protected final CustomLinkedList<Task> customList = new CustomLinkedList<>();
+    protected final Map<Integer, CustomNode<Task>> tasksHistory = new HashMap<>();
 
     @Override
     public void add(Task task) {
