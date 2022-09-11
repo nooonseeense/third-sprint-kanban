@@ -11,4 +11,3 @@ public interface CustomList<Task> {
 
     List<Task> getTasks();
 }
-
