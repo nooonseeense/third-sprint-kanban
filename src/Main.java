@@ -1,12 +1,10 @@
 import constants.Status;
-import exceptions.ManagerSaveException;
 import manager.Managers;
 import manager.TasksManager;
 import service.PrintConsole;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-import java.io.IOException;
 import java.util.List;
 
 public class Main {
@@ -87,7 +85,7 @@ public class Main {
 
         System.out.println("\n----------_SPRINT6_--------------\n");
 
-        //FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager("data/data.csv");
+
 
 //        fileBackedTasksManager.addTask(task1);
 //        fileBackedTasksManager.addEpic(epic1);
