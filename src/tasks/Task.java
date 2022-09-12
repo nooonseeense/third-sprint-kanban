@@ -35,6 +35,14 @@ public class Task {
         return TaskType.TASK;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
