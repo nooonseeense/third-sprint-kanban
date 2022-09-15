@@ -35,21 +35,13 @@ public class Task {
         return TaskType.TASK;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     @Override
     public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
+        return id + ","
+                + getTaskType() + ","
+                + name + ","
+                + status + ","
+                + description  + ","
+                + "\n";
     }
 }
