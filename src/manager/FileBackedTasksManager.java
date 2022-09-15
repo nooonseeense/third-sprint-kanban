@@ -1,15 +1,17 @@
 package manager;
 
 import constants.Status;
-import constants.TaskType;
 import exceptions.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 
 public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
     private final File file;
@@ -25,13 +27,17 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
         System.out.println("\n----------_SPRINT6_--------------\n");
 
-        Task task1 = new Task("Задача[1]", "Описание[1]", Status.NEW);
-        Epic epic1 = new Epic("Епик[1]", "Описание[1]");
-        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[1]", Status.DONE, epic1.getId());
-
+        Task task1 = new Task("Задача[1]", "Описание[Таск]", Status.NEW);
         fileBackedTasksManager.addTask(task1);
+
+        Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
         fileBackedTasksManager.addEpic(epic1);
+
+        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[Саб]", Status.DONE, epic1.getId());
         fileBackedTasksManager.addSubTask(subtask1);
+
+        //fileBackedTasksManager.getEpicById(task1.getId());
+
     }
 
     /**
@@ -47,29 +53,9 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
     private <T extends Task> void addTasksToFile(BufferedWriter bufferedWriter, T task)
             throws IOException {
-
-        if (task.getTaskType().equals(TaskType.SUBTASK)) {
-            bufferedWriter.write(toString(task));
-        }
-        if (task.getTaskType().equals(TaskType.TASK)) {
-            bufferedWriter.write(toString(task));
-        }
-        if (task.getTaskType().equals(TaskType.EPIC)) {
-            bufferedWriter.write(toString(task));
-        }
+        bufferedWriter.write(task.toString());
     }
 
-    public String toString(Task task) {
-        return task.getId() + ","
-                + task.getTaskType() + ","
-                + task.getName() + ","
-                + task.getStatus() + ","
-                + task.getDescription() + "\n";
-    }
-
-    /**
-     * Сначала выполняется версия, унаследованная от предка, а затем метод save()
-     */
     @Override
     public void addTask(Task task) {
         super.addTask(task);
@@ -87,4 +73,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         super.addSubTask(subtask);
         save(subtask);
     }
+    // 1. Сделать что-то с получением epic id [DONE]
+    // 2. Логика с добавлением history
+    // 3. Убрать дублирование
 }
