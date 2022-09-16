@@ -2,7 +2,6 @@ package tasks;
 
 import constants.Status;
 import constants.TaskType;
-
 import java.util.ArrayList;
 
 public class Epic extends Task {
