@@ -2,6 +2,7 @@ package manager;
 
 import constants.Status;
 import exceptions.ManagerSaveException;
+import service.TasksIDComparator;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -10,6 +11,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
     private final File file;
@@ -23,9 +26,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(new File(HOME));
 
-        System.out.println("\n----------_SPRINT6_--------------\n");
-
-        Task task1 = new Task("Задача[1]", "Описание[Таск]", Status.NEW);
+        Task task1 = new Task("Задача[1]", "Описание[1]", Status.NEW);
         fileBackedTasksManager.addTask(task1);
         fileBackedTasksManager.getTaskById(task1.getId());
 
@@ -35,7 +36,11 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
         Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[Саб]", Status.DONE, epic1.getId());
         fileBackedTasksManager.addSubTask(subtask1);
-        fileBackedTasksManager.getSubtaskById(subtask1.getId());
+
+        Task task2 = new Task("Задача[2]", "Описание[2]", Status.IN_PROGRESS);
+        fileBackedTasksManager.addTask(task2);
+
+
     }
 
     /**
@@ -43,12 +48,18 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
      */
     private void save() {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true))) {
+            TasksIDComparator tasksIDComparator = new TasksIDComparator();
+
+            List<Task> sortedTasks = new LinkedList<>();
+
+            addTasksToSortedList(sortedTasks, tasks.values());
+            addTasksToSortedList(sortedTasks, epics.values());
+            addTasksToSortedList(sortedTasks, subtasks.values());
+
+            sortedTasks.sort(tasksIDComparator);
+
             bufferedWriter.write("id,type,name,status,description,epic\n");
-
-            addTasksToFile(bufferedWriter, tasks.values());
-            addTasksToFile(bufferedWriter, epics.values());
-            addTasksToFile(bufferedWriter, subtasks.values());
-
+            addTasksToFile(bufferedWriter, sortedTasks);
             bufferedWriter.write(
                     "\n"
                     + historyToString(historyManager)
@@ -66,6 +77,10 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         }
     }
 
+    private <T extends Task> void addTasksToSortedList(List<Task> sortedTasks, Collection<T> tasks) {
+        sortedTasks.addAll(tasks);
+    }
+
     public static String historyToString(HistoryManager historyManager) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -73,6 +88,16 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
             stringBuilder.append(record.getId()).append(",");
         }
         return stringBuilder.toString();
+    }
+
+    public Task fromString() {
+
+        return null;
+    }
+
+    public static List<Integer> historyFromString(String value) {
+
+        return null;
     }
 
     @Override
