@@ -49,12 +49,11 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
     private void save() {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true))) {
             TasksIDComparator tasksIDComparator = new TasksIDComparator();
-
             List<Task> sortedTasks = new LinkedList<>();
 
-            addTasksToSortedList(sortedTasks, tasks.values());
-            addTasksToSortedList(sortedTasks, epics.values());
-            addTasksToSortedList(sortedTasks, subtasks.values());
+            sortedTasks.addAll(tasks.values());
+            sortedTasks.addAll(epics.values());
+            sortedTasks.addAll(subtasks.values());
 
             sortedTasks.sort(tasksIDComparator);
 
@@ -75,10 +74,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         for (T task : tasks) {
             bufferedWriter.write(task.toString());
         }
-    }
-
-    private <T extends Task> void addTasksToSortedList(List<Task> sortedTasks, Collection<T> tasks) {
-        sortedTasks.addAll(tasks);
     }
 
     public static String historyToString(HistoryManager historyManager) {
