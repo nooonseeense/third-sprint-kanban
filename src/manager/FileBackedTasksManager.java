@@ -1,15 +1,14 @@
 package manager;
 
 import constants.Status;
+import constants.TaskType;
 import exceptions.ManagerSaveException;
-import service.TasksIDComparator;
+import org.junit.platform.commons.util.StringUtils;
+import service.TasksIdComparator;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,22 +47,23 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
      */
     private void save() {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true))) {
-            TasksIDComparator tasksIDComparator = new TasksIDComparator();
-            List<Task> sortedTasks = new LinkedList<>();
+            TasksIdComparator tasksIdComparator = new TasksIdComparator();
+            List<Task> sortedTasksById = new LinkedList<>();
 
-            sortedTasks.addAll(tasks.values());
-            sortedTasks.addAll(epics.values());
-            sortedTasks.addAll(subtasks.values());
+            sortedTasksById.addAll(tasks.values());
+            sortedTasksById.addAll(epics.values());
+            sortedTasksById.addAll(subtasks.values());
 
-            sortedTasks.sort(tasksIDComparator);
+            sortedTasksById.sort(tasksIdComparator);
 
             bufferedWriter.write("id,type,name,status,description,epic\n");
-            addTasksToFile(bufferedWriter, sortedTasks);
+            addTasksToFile(bufferedWriter, sortedTasksById);
             bufferedWriter.write(
                     "\n"
-                    + historyToString(historyManager)
-                    + "\n"
-                    + "\n");
+                            + historyToString(historyManager)
+                            + "\n"
+                            + "\n");
+            loadFromFile(file);
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
@@ -85,15 +85,70 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         return stringBuilder.toString();
     }
 
-    public Task fromString() {
+    /*Восстанавливает данные из файла*/
+    // 1. Добавить методы addTusk и тд
+    public void loadFromFile(File file) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
 
-        return null;
+            while (bufferedReader.ready()) {
+                String line = bufferedReader.readLine();
+
+                if (!line.trim().isEmpty() && !line.contains("id,type,name,status,description,epic")) {
+                    Task receivedTask = fromString(line);
+
+                    switch (receivedTask.getTaskType()) {
+                        case TASK:
+                            addTask(receivedTask);
+                        case SUBTASK:
+                            addSubTask((Subtask) receivedTask);
+                        case EPIC:
+                            assert receivedTask instanceof Epic;
+                            addEpic((Epic)receivedTask);
+                    }
+                } else {
+                    // 2. ЕСЛИ СТРОЧКА С ИТСТОРИЕЙ: Логика записи истории
+                }
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException();
+        }
     }
 
+    /*Создание задачи из строки, записанной в методе save()*/
+    public Task fromString(String value) {
+        String[] split = value.split(",");
+        int id = 0;
+        TaskType type = null;
+        String name = " ";
+        Status status = null;
+        String description = " ";
+        int epicId;
+
+        for (int i = 0; i <= split.length; i++) {
+            id = Integer.parseInt(split[0]);
+            type = TaskType.valueOf(split[1]);
+            name = split[2];
+            status = Status.valueOf(split[3]);
+            description = split[4];
+            epicId = Integer.parseInt(split[5]);
+
+            if (type == TaskType.TASK) {
+                return new Task(id, type, name, status, description);
+            }
+            if (type == TaskType.SUBTASK) {
+                return new Subtask(id, type, name, status, description, epicId);
+            }
+        }
+        return new Epic(id, type, name, status, description);
+    }
+
+    // методы getTask, getEpic, getSubtask
+    /*Объект считывает строчки историй из файла и записывает в лист истории*/
     public static List<Integer> historyFromString(String value) {
 
         return null;
     }
+
 
     @Override
     public void addTask(Task task) {
