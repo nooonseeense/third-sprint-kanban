@@ -3,7 +3,6 @@ package manager;
 import constants.Status;
 import constants.TaskType;
 import exceptions.ManagerSaveException;
-import org.junit.platform.commons.util.StringUtils;
 import service.TasksIdComparator;
 import tasks.Epic;
 import tasks.Subtask;
@@ -39,7 +38,12 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         Task task2 = new Task("Задача[2]", "Описание[2]", Status.IN_PROGRESS);
         fileBackedTasksManager.addTask(task2);
 
+        fileBackedTasksManager.runLoadFromFile();
+    }
 
+
+    public void runLoadFromFile() {
+        loadFromFile(file);
     }
 
     /**
@@ -63,7 +67,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
                             + historyToString(historyManager)
                             + "\n"
                             + "\n");
-            loadFromFile(file);
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
@@ -93,17 +96,19 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine();
 
+                // Сделать проверку на пустую строчку
                 if (!line.trim().isEmpty() && !line.contains("id,type,name,status,description,epic")) {
                     Task receivedTask = fromString(line);
 
                     switch (receivedTask.getTaskType()) {
                         case TASK:
-                            addTask(receivedTask);
+                            // Возникает рекурсия так как срабатывает метод save()
+
                         case SUBTASK:
-                            addSubTask((Subtask) receivedTask);
+
                         case EPIC:
-                            assert receivedTask instanceof Epic;
-                            addEpic((Epic)receivedTask);
+
+
                     }
                 } else {
                     // 2. ЕСЛИ СТРОЧКА С ИТСТОРИЕЙ: Логика записи истории
@@ -122,22 +127,25 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         String name = " ";
         Status status = null;
         String description = " ";
-        int epicId;
+        int epicId = 0;
 
-        for (int i = 0; i <= split.length; i++) {
+        for (int i = 0; i < split.length; i++) {
             id = Integer.parseInt(split[0]);
             type = TaskType.valueOf(split[1]);
             name = split[2];
             status = Status.valueOf(split[3]);
             description = split[4];
-            epicId = Integer.parseInt(split[5]);
 
+            if (split.length == 6) {
+                epicId = Integer.parseInt(split[5]);
+            }
             if (type == TaskType.TASK) {
                 return new Task(id, type, name, status, description);
             }
             if (type == TaskType.SUBTASK) {
                 return new Subtask(id, type, name, status, description, epicId);
             }
+            // ошибка с выходом
         }
         return new Epic(id, type, name, status, description);
     }
