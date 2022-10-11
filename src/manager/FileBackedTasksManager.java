@@ -9,9 +9,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
     private final File file;
@@ -91,8 +89,11 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine(); // Получаем: 0, 2, и тд
-
                 // 3. ЕСЛИ СТРОЧКА С ИСТОРИЕЙ: Логика записи истории
+
+                if (line.isEmpty()) {
+                    continue;
+                }
 
                 if (!line.trim().isEmpty() && !line.contains("id,type,name,status,description,epic")) {
                     Task receivedTask = fromString(line); // Получили объект Task
@@ -113,33 +114,33 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
     }
 
     /*Создание задачи из строки, записанной в методе save()*/
-    // 1. Можем ли мы избавиться от цикла и зачем он нам?
     public Task fromString(String value) {
         String[] split = value.split(",");
-
         int id = Integer.parseInt(split[0]);
         TaskType type = TaskType.valueOf(split[1]);
         String name = split[2];
         Status status = Status.valueOf(split[3]);
         String description = split[4];
-        int epicId = 0;
 
-        if (split.length == 6) {
-            epicId = Integer.parseInt(split[5]);
-        }
         if (type == TaskType.TASK) {
             return new Task(id, type, name, status, description);
         }
         if (type == TaskType.SUBTASK) {
-            return new Subtask(id, type, name, status, description, epicId);
+            return new Subtask(id, type, name, status, description, Integer.parseInt(split[5]));
         }
-        return new Epic(id, type, name, status, description); // ошибка с выходом
+        return new Epic(id, type, name, status, description);
     }
 
     // методы getTask, getEpic, getSubtask
     /*Объект считывает строчки историй из файла и записывает в лист истории*/
     public static List<Integer> historyFromString(String value) {
-        return null;
+        String[] split = value.split(",");
+        List<Integer> historyIds = new LinkedList<>();
+
+        for (String num : split) {
+            historyIds.add(Integer.parseInt(num));
+        }
+        return historyIds;
     }
 
     @Override
