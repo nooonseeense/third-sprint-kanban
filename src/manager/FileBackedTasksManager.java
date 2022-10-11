@@ -7,6 +7,7 @@ import service.TasksIdComparator;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.io.*;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,12 +36,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[Саб]", Status.DONE, epic1.getId());
         fileBackedTasksManager.addSubTask(subtask1);
 
-        Task task2 = new Task("Задача[2]", "Описание[2]", Status.IN_PROGRESS);
-        fileBackedTasksManager.addTask(task2);
-
         fileBackedTasksManager.runLoadFromFile();
     }
-
 
     public void runLoadFromFile() {
         loadFromFile(file);
@@ -88,30 +85,26 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         return stringBuilder.toString();
     }
 
-    /*Восстанавливает данные из файла*/
     // 1. Добавить методы addTusk и тд
+    // 2. Сделать проверку на пустую строчку | DONE
     public void loadFromFile(File file) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-
             while (bufferedReader.ready()) {
-                String line = bufferedReader.readLine();
+                String line = bufferedReader.readLine(); // Получаем: 0, 2, и тд
 
-                // Сделать проверку на пустую строчку
+                // 3. ЕСЛИ СТРОЧКА С ИСТОРИЕЙ: Логика записи истории
+
                 if (!line.trim().isEmpty() && !line.contains("id,type,name,status,description,epic")) {
-                    Task receivedTask = fromString(line);
+                    Task receivedTask = fromString(line); // Получили объект Task
 
                     switch (receivedTask.getTaskType()) {
                         case TASK:
                             // Возникает рекурсия так как срабатывает метод save()
-
                         case SUBTASK:
-
+                            // добавляем в оперативную память SUBTASK
                         case EPIC:
-
-
+                            // добавляем в оперативную память EPIC
                     }
-                } else {
-                    // 2. ЕСЛИ СТРОЧКА С ИТСТОРИЕЙ: Логика записи истории
                 }
             }
         } catch (IOException e) {
@@ -120,43 +113,34 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
     }
 
     /*Создание задачи из строки, записанной в методе save()*/
+    // 1. Можем ли мы избавиться от цикла и зачем он нам?
     public Task fromString(String value) {
         String[] split = value.split(",");
-        int id = 0;
-        TaskType type = null;
-        String name = " ";
-        Status status = null;
-        String description = " ";
+
+        int id = Integer.parseInt(split[0]);
+        TaskType type = TaskType.valueOf(split[1]);
+        String name = split[2];
+        Status status = Status.valueOf(split[3]);
+        String description = split[4];
         int epicId = 0;
 
-        for (int i = 0; i < split.length; i++) {
-            id = Integer.parseInt(split[0]);
-            type = TaskType.valueOf(split[1]);
-            name = split[2];
-            status = Status.valueOf(split[3]);
-            description = split[4];
-
-            if (split.length == 6) {
-                epicId = Integer.parseInt(split[5]);
-            }
-            if (type == TaskType.TASK) {
-                return new Task(id, type, name, status, description);
-            }
-            if (type == TaskType.SUBTASK) {
-                return new Subtask(id, type, name, status, description, epicId);
-            }
-            // ошибка с выходом
+        if (split.length == 6) {
+            epicId = Integer.parseInt(split[5]);
         }
-        return new Epic(id, type, name, status, description);
+        if (type == TaskType.TASK) {
+            return new Task(id, type, name, status, description);
+        }
+        if (type == TaskType.SUBTASK) {
+            return new Subtask(id, type, name, status, description, epicId);
+        }
+        return new Epic(id, type, name, status, description); // ошибка с выходом
     }
 
     // методы getTask, getEpic, getSubtask
     /*Объект считывает строчки историй из файла и записывает в лист истории*/
     public static List<Integer> historyFromString(String value) {
-
         return null;
     }
-
 
     @Override
     public void addTask(Task task) {
