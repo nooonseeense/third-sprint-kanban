@@ -89,23 +89,25 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine(); // Получаем: 0, 2, и тд
-                // 3. ЕСЛИ СТРОЧКА С ИСТОРИЕЙ: Логика записи истории
 
-                if (line.isEmpty()) {
+                if (line.isEmpty() || line.contains("id,type,name,status,description,epic")) {
                     continue;
                 }
+                // 3. ЕСЛИ СТРОЧКА С ИСТОРИЕЙ: historyFromString
 
-                if (!line.trim().isEmpty() && !line.contains("id,type,name,status,description,epic")) {
-                    Task receivedTask = fromString(line); // Получили объект Task
+                Task receivedTask = fromString(line); // Получили объект Task
 
-                    switch (receivedTask.getTaskType()) {
-                        case TASK:
-                            // Возникает рекурсия так как срабатывает метод save()
-                        case SUBTASK:
-                            // добавляем в оперативную память SUBTASK
-                        case EPIC:
-                            // добавляем в оперативную память EPIC
-                    }
+                switch (receivedTask.getTaskType()) {
+                    case TASK:
+                        tasks.put(receivedTask.getId(), receivedTask);
+                        break;
+                    case SUBTASK:
+                        subtasks.put(receivedTask.getId(), (Subtask) receivedTask);
+                        break;
+                    case EPIC:
+                        assert receivedTask instanceof Epic;
+                        epics.put(receivedTask.getId(), (Epic) receivedTask);
+                        break;
                 }
             }
         } catch (IOException e) {
@@ -114,19 +116,19 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
     }
 
     /*Создание задачи из строки, записанной в методе save()*/
-    public Task fromString(String value) {
-        String[] split = value.split(",");
-        int id = Integer.parseInt(split[0]);
-        TaskType type = TaskType.valueOf(split[1]);
-        String name = split[2];
-        Status status = Status.valueOf(split[3]);
-        String description = split[4];
+    public Task fromString(String value) { // value: 0,1,3,4,2
+        String[] valueSplit = value.split(","); // 0,1,3,4,2
+        int id = Integer.parseInt(valueSplit[0]);
+        TaskType type = TaskType.valueOf(valueSplit[1]);
+        String name = valueSplit[2];
+        Status status = Status.valueOf(valueSplit[3]);
+        String description = valueSplit[4];
 
         if (type == TaskType.TASK) {
             return new Task(id, type, name, status, description);
         }
         if (type == TaskType.SUBTASK) {
-            return new Subtask(id, type, name, status, description, Integer.parseInt(split[5]));
+            return new Subtask(id, type, name, status, description, Integer.parseInt(valueSplit[5]));
         }
         return new Epic(id, type, name, status, description);
     }
@@ -134,10 +136,10 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
     // методы getTask, getEpic, getSubtask
     /*Объект считывает строчки историй из файла и записывает в лист истории*/
     public static List<Integer> historyFromString(String value) {
-        String[] split = value.split(",");
+        String[] valueSplit = value.split(",");
         List<Integer> historyIds = new LinkedList<>();
 
-        for (String num : split) {
+        for (String num : valueSplit) {
             historyIds.add(Integer.parseInt(num));
         }
         return historyIds;
