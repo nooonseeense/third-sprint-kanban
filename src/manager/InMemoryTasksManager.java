@@ -55,7 +55,7 @@ public class InMemoryTasksManager implements TasksManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
+    public void updateSubtask(Subtask subtask) { // THIS ERROR
         subtasks.put(subtask.getId(), subtask);
         Epic epic = epics.get(subtask.getEpicId());
         updateEpicStatus(epic);
@@ -167,10 +167,6 @@ public class InMemoryTasksManager implements TasksManager {
 
             for (int i = 0; i < epic.getSubtaskIds().size(); i++) {
                 subtasksNew.add(subtasks.get(epic.getSubtaskIds().get(i)));
-            }
-            if (!subtasks.isEmpty()) {
-                epic.setStatus(Status.NEW);
-                return;
             }
             for (Subtask value : subtasksNew) {
                 switch (value.getStatus()) {
