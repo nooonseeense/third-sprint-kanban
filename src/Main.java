@@ -27,8 +27,8 @@ public class Main {
         tasksManager.addEpic(epic2);
 
         Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[1]", Status.DONE, epic1.getId());
-        Subtask subtask2 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS, epic1.getId());
-        Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS, epic1.getId());
+        Subtask subtask2 = new Subtask("Подзадача[2]", "Описание[2]", Status.DONE, epic1.getId());
+        Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.DONE, epic1.getId());
 
         tasksManager.addSubTask(subtask1);
         tasksManager.addSubTask(subtask2);
@@ -85,11 +85,8 @@ public class Main {
 
         System.out.println("\n----------_SPRINT6_--------------\n");
 
-
-
 //        fileBackedTasksManager.addTask(task1);
 //        fileBackedTasksManager.addEpic(epic1);
 //        fileBackedTasksManager.addSubTask(subtask1);
-
     }
 }
