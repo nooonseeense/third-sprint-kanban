@@ -3,6 +3,8 @@ package tasks;
 import constants.Status;
 import constants.TaskType;
 
+import java.util.Objects;
+
 public class Task {
     protected String name;
     protected String description;
@@ -43,6 +45,21 @@ public class Task {
 
     public TaskType getTaskType() {
         return TaskType.TASK;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id && Objects.equals(name, task.name)
+                && Objects.equals(description, task.description)
+                && status == task.status && taskType == task.taskType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, id, status, taskType);
     }
 
     @Override
