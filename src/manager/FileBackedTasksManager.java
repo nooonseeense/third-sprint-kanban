@@ -7,7 +7,6 @@ import service.TasksIdComparator;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
 import java.io.*;
 import java.util.*;
 
@@ -83,31 +82,39 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         return stringBuilder.toString();
     }
 
-    // 1. Добавить методы addTusk и тд
-    // 2. Сделать проверку на пустую строчку | DONE
     public void loadFromFile(File file) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            while (bufferedReader.ready()) {
-                String line = bufferedReader.readLine(); // Получаем: 0, 2, и тд
+            HistoryManager historyManager = Managers.getDefaultHistory();
+            Map<Integer, Task> tempStorageOfTasks = new HashMap<>();
 
-                if (line.isEmpty() || line.contains("id,type,name,status,description,epic")) {
+            while (bufferedReader.ready()) {
+                String line = bufferedReader.readLine();
+
+                if (line.contains("id,type,name,status,description,epic") || line.equals("")) {
                     continue;
                 }
-                // 3. ЕСЛИ СТРОЧКА С ИСТОРИЕЙ: historyFromString
 
-                Task receivedTask = fromString(line); // Получили объект Task
+                if (line.contains("TASK") || line.contains("EPIC") || line.contains("SUBTASK")) {
+                    Task receivedTask = fromString(line);
 
-                switch (receivedTask.getTaskType()) {
-                    case TASK:
-                        tasks.put(receivedTask.getId(), receivedTask);
-                        break;
-                    case SUBTASK:
-                        subtasks.put(receivedTask.getId(), (Subtask) receivedTask);
-                        break;
-                    case EPIC:
-                        assert receivedTask instanceof Epic;
-                        epics.put(receivedTask.getId(), (Epic) receivedTask);
-                        break;
+                    switch (receivedTask.getTaskType()) {
+                        case TASK:
+                            tasks.put(receivedTask.getId(), receivedTask);
+                            tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
+                            break;
+                        case SUBTASK:
+                            subtasks.put(receivedTask.getId(), (Subtask) receivedTask);
+                            tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
+                            break;
+                        case EPIC:
+                            epics.put(receivedTask.getId(), (Epic) receivedTask);
+                            tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
+                            break;
+                    }
+                } else {
+                    for (int historyId : historyFromString(line)) {
+                        historyManager.add(tempStorageOfTasks.get(historyId));
+                    }
                 }
             }
         } catch (IOException e) {
@@ -115,9 +122,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         }
     }
 
-    /*Создание задачи из строки, записанной в методе save()*/
-    public Task fromString(String value) { // value: 0,1,3,4,2
-        String[] valueSplit = value.split(","); // 0,1,3,4,2
+    public Task fromString(String value) {
+        String[] valueSplit = value.split(",");
         int id = Integer.parseInt(valueSplit[0]);
         TaskType type = TaskType.valueOf(valueSplit[1]);
         String name = valueSplit[2];
@@ -133,8 +139,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         return new Epic(id, type, name, status, description);
     }
 
-    // методы getTask, getEpic, getSubtask
-    /*Объект считывает строчки историй из файла и записывает в лист истории*/
     public static List<Integer> historyFromString(String value) {
         String[] valueSplit = value.split(",");
         List<Integer> historyIds = new LinkedList<>();
