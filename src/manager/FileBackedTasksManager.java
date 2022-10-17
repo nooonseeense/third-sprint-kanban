@@ -10,7 +10,7 @@ import tasks.Task;
 import java.io.*;
 import java.util.*;
 
-public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
+public class FileBackedTasksManager extends InMemoryTasksManager {
     private final File file;
 
     public FileBackedTasksManager(File file) {
