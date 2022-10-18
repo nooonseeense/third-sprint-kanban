@@ -3,7 +3,6 @@ package manager;
 import constants.Status;
 import constants.TaskType;
 import exceptions.ManagerSaveException;
-import service.TasksIdComparator;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -32,19 +31,22 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
         Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[Саб]", Status.DONE, epic1.getId());
         fileBackedTasksManager.addSubTask(subtask1);
+        fileBackedTasksManager.getSubtaskById(subtask1.getId());
 
+        Task task2 = new Task("Задача[2]", "Описание[2]", Status.NEW);
+        fileBackedTasksManager.addTask(task2);
+        fileBackedTasksManager.getTaskById(task2.getId());
     }
 
     private void save() {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true))) {
-            TasksIdComparator tasksIdComparator = new TasksIdComparator();
             List<Task> sortedTasksById = new LinkedList<>();
 
             sortedTasksById.addAll(tasks.values());
             sortedTasksById.addAll(epics.values());
             sortedTasksById.addAll(subtasks.values());
 
-            sortedTasksById.sort(tasksIdComparator);
+            sortedTasksById.sort(Comparator.comparingInt(Task::getId));
 
             bufferedWriter.write("id,type,name,status,description,epic\n");
             addTasksToFile(bufferedWriter, sortedTasksById);
