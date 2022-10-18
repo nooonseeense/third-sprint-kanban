@@ -6,6 +6,7 @@ import exceptions.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.io.*;
 import java.util.*;
 
@@ -161,6 +162,81 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     @Override
     public void addSubTask(Subtask subtask) {
         super.addSubTask(subtask);
+        save();
+    }
+
+    @Override
+    public Task getTaskById(int id) {
+        historyManager.add(tasks.get(id));
+        save();
+        return tasks.get(id);
+    }
+
+    @Override
+    public Epic getEpicById(int id) {
+        historyManager.add(epics.get(id));
+        save();
+        return epics.get(id);
+    }
+
+    @Override
+    public Subtask getSubtaskById(int id) {
+        historyManager.add(subtasks.get(id));
+        save();
+        return subtasks.get(id);
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        super.updateTask(task);
+        save();
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
+        save();
+    }
+
+    @Override
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
+        save();
+    }
+
+    @Override
+    public void taskAllDelete() {
+        super.taskAllDelete();
+        save();
+    }
+
+    @Override
+    public void epicAllDelete() {
+        super.epicAllDelete();
+        save();
+    }
+
+    @Override
+    public void subtaskAllDelete() {
+        super.subtaskAllDelete();
+        save();
+    }
+
+    @Override
+    public void deleteTaskInIds(int id) {
+        super.deleteTaskInIds(id);
+        save();
+    }
+
+    @Override
+    public void deleteEpicInIds(int id) {
+        super.deleteEpicInIds(id);
+        save();
+    }
+
+    @Override
+    public void deleteSubTaskInIds(int id) {
+        super.deleteSubTaskInIds(id);
         save();
     }
 }
