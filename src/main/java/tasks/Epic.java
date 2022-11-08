@@ -7,12 +7,19 @@ import java.util.ArrayList;
 public class Epic extends Task {
     private final ArrayList<Integer> subtaskIds = new ArrayList<>();
 
-    public Epic(String name, String description) {
-        super(name, description, Status.NEW);
+    public Epic(String name,
+                String description
+    ) {
+        super(name, description, Status.NEW); // сюда добавим три метода по расчету duration startTime endTime
     }
 
-    public Epic(int id, TaskType taskType, String name, Status status, String description) {
-       super(id, taskType, name, status, description);
+    public Epic(int id,
+                TaskType taskType,
+                String name,
+                Status status,
+                String description
+    ) {
+       super(id, taskType, name, status, description); // сюда добавим три метода по расчету duration startTime endTime
     }
 
     public ArrayList<Integer> getSubtaskIds () {
@@ -35,6 +42,8 @@ public class Epic extends Task {
                 + name + ","
                 + status + ","
                 + description  + ","
-                + "\n";
+                + duration + ","
+                + startTime + ","
+                + endTime + "\n";
     }
 }
