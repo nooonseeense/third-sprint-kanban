@@ -37,7 +37,8 @@ public class Task {
                 Status status,
                 String description,
                 int duration,
-                LocalDateTime startTime
+                LocalDateTime startTime,
+                LocalDateTime endTime
     ) {
         this.id = id;
         this.taskType = taskType;
@@ -46,7 +47,7 @@ public class Task {
         this.description = description;
         this.duration = duration;
         this.startTime = startTime;
-        endTime = getEndTime();
+        this.endTime = endTime;
     }
 
     public int getId() {

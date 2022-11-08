@@ -2,6 +2,7 @@ package tasks;
 
 import constants.Status;
 import constants.TaskType;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -12,14 +13,17 @@ public class Epic extends Task {
     ) {
         super(name, description, Status.NEW); // сюда добавим три метода по расчету duration startTime endTime
     }
-
+    // Конструктор для метода public Task fromString(String value)
     public Epic(int id,
                 TaskType taskType,
                 String name,
                 Status status,
-                String description
+                String description,
+                int duration,
+                LocalDateTime startTime,
+                LocalDateTime endTime
     ) {
-       super(id, taskType, name, status, description); // сюда добавим три метода по расчету duration startTime endTime
+       super(id, taskType, name, status, description, duration, startTime, endTime);
     }
 
     public ArrayList<Integer> getSubtaskIds () {
