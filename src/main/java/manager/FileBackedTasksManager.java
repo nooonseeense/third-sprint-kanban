@@ -123,19 +123,24 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     public Task fromString(String value) { // Перепарсить строчку
         String[] valueSplit = value.split(",");
+
         int id = Integer.parseInt(valueSplit[0]);
         TaskType type = TaskType.valueOf(valueSplit[1]);
         String name = valueSplit[2];
         Status status = Status.valueOf(valueSplit[3]);
         String description = valueSplit[4];
+        int duration = Integer.parseInt(valueSplit[5]);
+        LocalDateTime startTime = LocalDateTime.parse(valueSplit[6]);
+        LocalDateTime endTime = LocalDateTime.parse(valueSplit[7]);
 
         if (type == TaskType.TASK) {
-            return new Task(id, type, name, status, description);
+            return new Task(id, type, name, status, description, duration, startTime, endTime);
         }
         if (type == TaskType.SUBTASK) {
-            return new Subtask(id, type, name, status, description, Integer.parseInt(valueSplit[5])); // Здесь изменить индекс на последнюю строчку
+            return new Subtask(id, type, name, status, description, duration, startTime, endTime,
+                    Integer.parseInt(valueSplit[8])); // Здесь изменить индекс на последнюю строчку
         }
-        return new Epic(id, type, name, status, description);
+        return new Epic(id, type, name, status, description, duration, startTime, endTime);
     }
 
     public static List<Integer> historyFromString(String value) {
