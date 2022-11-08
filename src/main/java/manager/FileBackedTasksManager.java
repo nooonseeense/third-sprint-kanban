@@ -8,6 +8,8 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTasksManager {
@@ -18,25 +20,26 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }
 
     public static void main(String[] args) {
-        final String HOME = "src/data/data.csv";
+        final String HOME = "src/main/java/data/data.csv";
 
         FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File(HOME));
 
-        Task task1 = new Task("Задача[1]", "Описание[1]", Status.NEW);
+        Task task1 = new Task("Задача", "Описание",
+                Status.NEW, 60, LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 0));
         fileBackedTasksManager.addTask(task1);
         fileBackedTasksManager.getTaskById(task1.getId());
 
-        Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
-        fileBackedTasksManager.addEpic(epic1);
-        fileBackedTasksManager.getEpicById(epic1.getId());
-
-        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[Саб]", Status.DONE, epic1.getId());
-        fileBackedTasksManager.addSubTask(subtask1);
-        fileBackedTasksManager.getSubtaskById(subtask1.getId());
-
-        Task task2 = new Task("Задача[2]", "Описание[2]", Status.NEW);
-        fileBackedTasksManager.addTask(task2);
-        fileBackedTasksManager.getTaskById(task2.getId());
+//        Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
+//        fileBackedTasksManager.addEpic(epic1);
+//        fileBackedTasksManager.getEpicById(epic1.getId());
+//
+//        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[Саб]", Status.DONE, epic1.getId());
+//        fileBackedTasksManager.addSubTask(subtask1);
+//        fileBackedTasksManager.getSubtaskById(subtask1.getId());
+//
+//        Task task2 = new Task("Задача[2]", "Описание[2]", Status.NEW);
+//        fileBackedTasksManager.addTask(task2);
+//        fileBackedTasksManager.getTaskById(task2.getId());
     }
 
     private void save() {
@@ -49,13 +52,9 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
             sortedTasksById.sort(Comparator.comparingInt(Task::getId));
 
-            bufferedWriter.write("id,type,name,status,description,epic\n");
+            bufferedWriter.write("id,type,name,status,description,duration,startTime,endTime,epic\n");
             addTasksToFile(bufferedWriter, sortedTasksById);
-            bufferedWriter.write(
-                    "\n"
-                            + historyToString(historyManager)
-                            + "\n"
-                            + "\n");
+            bufferedWriter.write("\n" + historyToString(historyManager) + "\n" + "\n");
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
@@ -87,7 +86,9 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine();
 
-                if (line.contains("id,type,name,status,description,epic") || line.equals("")) {
+                if (line.contains("id,type,name,status,description,duration,startTime,endTime,epic")
+                        || line.equals("")
+                ) {
                     continue;
                 }
 
@@ -120,7 +121,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         return new FileBackedTasksManager(file);
     }
 
-    public Task fromString(String value) {
+    public Task fromString(String value) { // Перепарсить строчку
         String[] valueSplit = value.split(",");
         int id = Integer.parseInt(valueSplit[0]);
         TaskType type = TaskType.valueOf(valueSplit[1]);
@@ -132,7 +133,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             return new Task(id, type, name, status, description);
         }
         if (type == TaskType.SUBTASK) {
-            return new Subtask(id, type, name, status, description, Integer.parseInt(valueSplit[5]));
+            return new Subtask(id, type, name, status, description, Integer.parseInt(valueSplit[5])); // Здесь изменить индекс на последнюю строчку
         }
         return new Epic(id, type, name, status, description);
     }
