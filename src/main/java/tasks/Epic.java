@@ -11,8 +11,9 @@ public class Epic extends Task {
     public Epic(String name,
                 String description
     ) {
-        super(name, description, Status.NEW); // сюда добавим три метода по расчету duration startTime endTime
+        super(name, description, Status.NEW);
     }
+
     // Конструктор для метода public Task fromString(String value)
     public Epic(int id,
                 TaskType taskType,
