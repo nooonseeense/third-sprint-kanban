@@ -1,9 +1,10 @@
 package manager;
 
-import exceptions.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TasksManager {
@@ -32,6 +33,10 @@ public interface TasksManager {
     void deleteSubTaskInIds(int id);
 
     void updateEpicStatus(Epic epic);
+
+    int calculateEpicDuration(Epic epic);
+    LocalDateTime calculateEpicStartTime(Epic epic);
+    LocalDateTime calculateEpicEndTime(Epic epic);
 
     List<Task> getHistory();
 }

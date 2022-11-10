@@ -4,6 +4,8 @@ import constants.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -189,6 +191,21 @@ public class InMemoryTasksManager implements TasksManager {
                 epic.setStatus(Status.IN_PROGRESS);
             }
         }
+    }
+
+    @Override
+    public int calculateEpicDuration(Epic epic) {
+        return 0;
+    }
+
+    @Override
+    public LocalDateTime calculateEpicStartTime(Epic epic) {
+        return null;
+    }
+
+    @Override
+    public LocalDateTime calculateEpicEndTime(Epic epic) {
+        return null;
     }
 
     @Override
