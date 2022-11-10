@@ -133,12 +133,11 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         LocalDateTime startTime = LocalDateTime.parse(valueSplit[6]);
         LocalDateTime endTime = LocalDateTime.parse(valueSplit[7]);
 
-        if (type == TaskType.TASK) {
-            return new Task(id, type, name, status, description, duration, startTime, endTime);
-        }
-        if (type == TaskType.SUBTASK) {
-            return new Subtask(id, type, name, status, description, duration, startTime, endTime,
-                    Integer.parseInt(valueSplit[8])); // Здесь изменить индекс на последнюю строчку
+        switch (type) {
+            case TASK:
+                return new Task(id, type, name, status, description, duration, startTime, endTime);
+            case SUBTASK:
+                return new Subtask(id, type, name, status, description, duration, startTime, endTime, Integer.parseInt(valueSplit[8]));
         }
         return new Epic(id, type, name, status, description, duration, startTime, endTime);
     }
