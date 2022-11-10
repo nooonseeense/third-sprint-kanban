@@ -30,6 +30,13 @@ public class Task {
         endTime = getEndTime();
     }
 
+    // Конструктор для создания Epic
+    public Task(String name, String description, Status status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
     // Конструктор для метода public Task fromString(String value)
     public Task(int id,
                 TaskType taskType,
@@ -49,6 +56,8 @@ public class Task {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
+
 
     public int getId() {
         return id;
@@ -76,6 +85,18 @@ public class Task {
 
     public LocalDateTime getStartTime() {
         return startTime;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public LocalDateTime getEndTime() {
