@@ -33,7 +33,7 @@ public interface TasksManager {
 
     void updateEpicStatus(Epic epic);
 
-    void calculateEpicDuration(Epic epic);
+    void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks);
     void calculateStartAndEndTimeEpic(Epic epic);
 
     List<Task> getHistory();
