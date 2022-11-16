@@ -4,13 +4,12 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TasksManager {
     void addTask(Task task);
     void addEpic(Epic epic);
-    void addSubTask(Subtask subtask);
+    void addSubtask(Subtask subtask);
 
     void updateTask(Task task);
     void updateEpic(Epic epic);
@@ -34,9 +33,8 @@ public interface TasksManager {
 
     void updateEpicStatus(Epic epic);
 
-    int calculateEpicDuration(Epic epic);
-    LocalDateTime calculateEpicStartTime(Epic epic);
-    LocalDateTime calculateEpicEndTime(Epic epic);
+    void calculateEpicDuration(Epic epic);
+    void calculateStartAndEndTimeEpic(Epic epic);
 
     List<Task> getHistory();
 }
