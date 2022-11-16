@@ -57,8 +57,6 @@ public class Task {
         this.endTime = endTime;
     }
 
-
-
     public int getId() {
         return id;
     }
@@ -126,7 +124,7 @@ public class Task {
                 + getTaskType() + ","
                 + name + ","
                 + status + ","
-                + description  + ","
+                + description + ","
                 + duration + ","
                 + startTime + ","
                 + endTime + "\n";
