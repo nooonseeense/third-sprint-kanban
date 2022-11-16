@@ -25,21 +25,25 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File(HOME));
 
         Task task1 = new Task("Задача", "Описание",
-                Status.NEW, 60, LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 0));
+                Status.NEW, 60, LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
         fileBackedTasksManager.addTask(task1);
         fileBackedTasksManager.getTaskById(task1.getId());
 
-//        Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
-//        fileBackedTasksManager.addEpic(epic1);
-//        fileBackedTasksManager.getEpicById(epic1.getId());
-//
-//        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[Саб]", Status.DONE, epic1.getId());
-//        fileBackedTasksManager.addSubTask(subtask1);
-//        fileBackedTasksManager.getSubtaskById(subtask1.getId());
-//
-//        Task task2 = new Task("Задача[2]", "Описание[2]", Status.NEW);
-//        fileBackedTasksManager.addTask(task2);
-//        fileBackedTasksManager.getTaskById(task2.getId());
+        Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
+        fileBackedTasksManager.addEpic(epic1);
+        fileBackedTasksManager.getEpicById(epic1.getId());
+
+        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[2]", Status.DONE,
+                60, LocalDateTime.of(2020, Month.JULY, 14, 10, 0), epic1.getId());
+        fileBackedTasksManager.addSubTask(subtask1);
+        fileBackedTasksManager.getSubtaskById(subtask1.getId());
+
+        Subtask subtask2 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
+                60, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 30), epic1.getId());
+        fileBackedTasksManager.addSubTask(subtask2);
+        fileBackedTasksManager.getSubtaskById(subtask2.getId());
+
+
     }
 
     private void save() {
@@ -63,9 +67,56 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     private <T extends Task> void addTasksToFile(BufferedWriter bufferedWriter, Collection<T> tasks)
             throws IOException {
         for (T task : tasks) {
+            if (task.getStartTime() == null || task.getEndTime() == null) {
+                continue;
+            }
             bufferedWriter.write(task.toString());
         }
     }
+
+//    private <T extends Task> void addTasksToFile(BufferedWriter bufferedWriter, Collection<T> tasks)
+//            throws IOException {
+//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+//
+//        for (T task : tasks) {
+//            String[] taskLine = task.toString().split(",");
+//
+//            int id = Integer.parseInt(taskLine[0]);
+//            TaskType type = TaskType.valueOf(taskLine[1]);
+//            String name = taskLine[2];
+//            Status status = Status.valueOf(taskLine[3]);
+//            String description = taskLine[4];
+//            int duration = Integer.parseInt(taskLine[5]);
+//            String startTime = task.getStartTime().format(dateTimeFormatter);
+//            String endTime = task.getEndTime().format(dateTimeFormatter);
+//
+//            if (task.getTaskType() == TaskType.EPIC) {
+//                bufferedWriter.write(
+//                        id + ","
+//                                + type + ","
+//                                + name + ","
+//                                + status + ","
+//                                + description + ","
+//                                + duration + ","
+//                                + startTime + ","
+//                                + endTime + ","
+//                                + taskLine[8] + "\n"
+//                );
+//            } else {
+//                bufferedWriter.write(
+//                        id + ","
+//                                + type + ","
+//                                + name + ","
+//                                + status + ","
+//                                + description + ","
+//                                + duration + ","
+//                                + startTime + ","
+//                                + endTime + ","
+//                                + "\n"
+//                );
+//            }
+//        }
+//    }
 
     public static String historyToString(HistoryManager historyManager) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -137,7 +188,17 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             case TASK:
                 return new Task(id, type, name, status, description, duration, startTime, endTime);
             case SUBTASK:
-                return new Subtask(id, type, name, status, description, duration, startTime, endTime, Integer.parseInt(valueSplit[8]));
+                return new Subtask(
+                        id,
+                        type,
+                        name,
+                        status,
+                        description,
+                        duration,
+                        startTime,
+                        endTime,
+                        Integer.parseInt(valueSplit[8])
+                );
         }
         return new Epic(id, type, name, status, description, duration, startTime, endTime);
     }
