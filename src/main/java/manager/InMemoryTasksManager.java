@@ -45,7 +45,6 @@ public class InMemoryTasksManager implements TasksManager {
         epic.setSubtaskIds(subtaskId);
         updateEpicStatus(epic);
         calculateStartAndEndTimeEpic(epics.get(epicId));
-       // calculateEpicDuration(epics.get(epicId));
     }
 
     @Override
@@ -196,9 +195,13 @@ public class InMemoryTasksManager implements TasksManager {
     }
 
     @Override
-    public void calculateEpicDuration(Epic epic) {
-        Duration duration = Duration.between(epic.getStartTime(), epic.getEndTime());
-        epic.setDuration((int) duration.getSeconds() * 60);
+    public void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks) {
+        int epicDuration = 0;
+
+        for (Subtask subtask : newSubtasks) {
+            epicDuration += subtask.getDuration();
+        }
+        epic.setDuration(epicDuration);
     }
 
     @Override
@@ -215,6 +218,7 @@ public class InMemoryTasksManager implements TasksManager {
         }
         epic.setStartTime(newSubtasks.get(0).getStartTime());
         epic.setEndTime(newSubtasks.get(newSubtasks.size() - 1).getEndTime());
+        calculateEpicDuration(epic, newSubtasks);
     }
 
 
