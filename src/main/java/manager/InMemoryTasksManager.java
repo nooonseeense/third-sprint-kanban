@@ -5,11 +5,9 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTasksManager implements TasksManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
@@ -33,17 +31,21 @@ public class InMemoryTasksManager implements TasksManager {
     }
 
     @Override
-    public void addSubTask(Subtask subtask) {
+    public void addSubtask(Subtask subtask) {
         int epicId = subtask.getEpicId();
         Epic epic = epics.get(epicId);
+
         if (epic == null) {
             return;
         }
+
         int subtaskId = generator++;
         subtask.setId(subtaskId);
         subtasks.put(subtaskId, subtask);
         epic.setSubtaskIds(subtaskId);
         updateEpicStatus(epic);
+        calculateStartAndEndTimeEpic(epics.get(epicId));
+       // calculateEpicDuration(epics.get(epicId));
     }
 
     @Override
@@ -194,19 +196,27 @@ public class InMemoryTasksManager implements TasksManager {
     }
 
     @Override
-    public int calculateEpicDuration(Epic epic) {
-        return 0;
+    public void calculateEpicDuration(Epic epic) {
+        Duration duration = Duration.between(epic.getStartTime(), epic.getEndTime());
+        epic.setDuration((int) duration.getSeconds() * 60);
     }
 
     @Override
-    public LocalDateTime calculateEpicStartTime(Epic epic) {
-        return null;
+    public void calculateStartAndEndTimeEpic(Epic epic) {
+        List<Subtask> allSubtasks = getSubtask();
+        List<Subtask> newSubtasks = new LinkedList<>();
+
+        for (Integer subtaskId : epic.getSubtaskIds()) {
+            for (Subtask subtask : allSubtasks) {
+                if (subtaskId == subtask.getId()) {
+                    newSubtasks.add(subtask);
+                }
+            }
+        }
+        epic.setStartTime(newSubtasks.get(0).getStartTime());
+        epic.setEndTime(newSubtasks.get(newSubtasks.size() - 1).getEndTime());
     }
 
-    @Override
-    public LocalDateTime calculateEpicEndTime(Epic epic) {
-        return null;
-    }
 
     @Override
     public List<Task> getHistory() {
