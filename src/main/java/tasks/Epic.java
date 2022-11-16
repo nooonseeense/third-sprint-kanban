@@ -3,10 +3,11 @@ package tasks;
 import constants.Status;
 import constants.TaskType;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Epic extends Task {
-    private final ArrayList<Integer> subtaskIds = new ArrayList<>();
+    private final List<Integer> subtaskIds = new LinkedList<>();
 
     public Epic(String name,
                 String description
@@ -27,7 +28,7 @@ public class Epic extends Task {
        super(id, taskType, name, status, description, duration, startTime, endTime);
     }
 
-    public ArrayList<Integer> getSubtaskIds () {
+    public List<Integer> getSubtaskIds () {
         return subtaskIds;
     }
 
