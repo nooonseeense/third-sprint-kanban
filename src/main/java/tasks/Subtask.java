@@ -44,7 +44,7 @@ public class Subtask extends Task {
     }
 
     @Override
-    public String toString() { // переопределить
+    public String toString() {
         return id + ","
                 + getTaskType() + ","
                 + name + ","
@@ -53,7 +53,6 @@ public class Subtask extends Task {
                 + duration + ","
                 + startTime + ","
                 + endTime + ","
-                + epicId + ","
-                + "\n";
+                + epicId + "\n";
     }
 }
