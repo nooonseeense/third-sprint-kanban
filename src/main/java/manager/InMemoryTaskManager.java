@@ -4,12 +4,9 @@ import constants.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 
-public class InMemoryTasksManager implements TasksManager {
+public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
@@ -62,6 +59,7 @@ public class InMemoryTasksManager implements TasksManager {
         subtasks.put(subtask.getId(), subtask);
         Epic epic = epics.get(subtask.getEpicId());
         updateEpicStatus(epic);
+        calculateStartAndEndTimeEpic(epic);
     }
 
     @Override
@@ -108,9 +106,11 @@ public class InMemoryTasksManager implements TasksManager {
             historyManager.remove(value.getId());
         }
         subtasks.clear();
-        for (Epic value : epics.values()) {
-            value.getSubtaskIds().clear();
-            updateEpicStatus(value);
+
+        for (Epic epic : epics.values()) {
+            epic.getSubtaskIds().clear();
+            updateEpicStatus(epic);
+            calculateStartAndEndTimeEpic(epic);
         }
     }
 
@@ -157,6 +157,7 @@ public class InMemoryTasksManager implements TasksManager {
         subtasks.remove(id);
         updateEpicStatus(epic);
         historyManager.remove(id);
+        calculateStartAndEndTimeEpic(epic);
     }
 
     @Override
@@ -209,6 +210,11 @@ public class InMemoryTasksManager implements TasksManager {
         List<Subtask> allSubtasks = getSubtask();
         List<Subtask> newSubtasks = new LinkedList<>();
 
+        if (allSubtasks.isEmpty()) {
+            deleteEpicInIds(epic.getId());
+            return;
+        }
+
         for (Integer subtaskId : epic.getSubtaskIds()) {
             for (Subtask subtask : allSubtasks) {
                 if (subtaskId == subtask.getId()) {
@@ -220,7 +226,6 @@ public class InMemoryTasksManager implements TasksManager {
         epic.setEndTime(newSubtasks.get(newSubtasks.size() - 1).getEndTime());
         calculateEpicDuration(epic, newSubtasks);
     }
-
 
     @Override
     public List<Task> getHistory() {
