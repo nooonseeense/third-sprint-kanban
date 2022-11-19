@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
 
-public class FileBackedTasksManager extends InMemoryTasksManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
 
-    public FileBackedTasksManager(File file) {
+    public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
     public static void main(String[] args) {
         final String HOME = "src/main/java/data/data.csv";
 
-        FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File(HOME));
+        FileBackedTaskManager fileBackedTasksManager = FileBackedTaskManager.loadFromFile(new File(HOME));
 
         Task task1 = new Task("Задача", "Описание",
                 Status.NEW, 60, LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
@@ -43,7 +43,12 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         fileBackedTasksManager.addSubtask(subtask2);
         fileBackedTasksManager.getSubtaskById(subtask2.getId());
 
+        Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS,
+                20, LocalDateTime.of(2020, Month.NOVEMBER, 10, 8, 0), epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask3);
+        fileBackedTasksManager.getSubtaskById(subtask3.getId());
 
+        fileBackedTasksManager.updateEpic(epic1);
     }
 
     private void save() {
@@ -118,7 +123,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 //        }
 //    }
 
-    public static String historyToString(HistoryManager historyManager) {
+    private static String historyToString(HistoryManager historyManager) {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (Task record : historyManager.getHistory()) {
@@ -127,10 +132,10 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         return stringBuilder.toString();
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
+    private static FileBackedTaskManager loadFromFile(File file) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
-            InMemoryTasksManager inMemoryTasksManager = new InMemoryTasksManager();
+            FileBackedTaskManager fileBackedTasksManager = new FileBackedTaskManager(file);
+            InMemoryTaskManager inMemoryTasksManager = new InMemoryTaskManager();
             HistoryManager historyManager = Managers.getDefaultHistory();
             Map<Integer, Task> tempStorageOfTasks = new HashMap<>();
 
@@ -169,10 +174,10 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
-        return new FileBackedTasksManager(file);
+        return new FileBackedTaskManager(file);
     }
 
-    public Task fromString(String value) { // Перепарсить строчку
+    private Task fromString(String value) { // Перепарсить строчку
         String[] valueSplit = value.split(",");
 
         int id = Integer.parseInt(valueSplit[0]);
@@ -203,7 +208,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         return new Epic(id, type, name, status, description, duration, startTime, endTime);
     }
 
-    public static List<Integer> historyFromString(String value) {
+    private static List<Integer> historyFromString(String value) {
         String[] valueSplit = value.split(",");
         List<Integer> historyIds = new LinkedList<>();
 
