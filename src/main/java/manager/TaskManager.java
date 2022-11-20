@@ -33,6 +33,8 @@ interface TaskManager {
 
     void updateEpicStatus(Epic epic);
 
+    List<Task> getPrioritizedTasks();
+
     void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks);
     void calculateStartAndEndTimeEpic(Epic epic);
 
