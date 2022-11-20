@@ -1,8 +1,9 @@
 package manager;
 
-import epics.Task;
+import tasks.Task;
 import util.CustomLinkedList;
 import util.CustomNode;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

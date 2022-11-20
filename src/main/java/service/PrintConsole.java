@@ -1,7 +1,8 @@
 package service;
-import epics.Epic;
-import epics.Subtask;
-import epics.Task;
+
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;

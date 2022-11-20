@@ -1,7 +1,8 @@
-package epics;
+package tasks;
 
 import constants.Status;
 import constants.TaskType;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 

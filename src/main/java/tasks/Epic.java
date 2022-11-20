@@ -1,7 +1,8 @@
-package epics;
+package tasks;
 
 import constants.Status;
 import constants.TaskType;
+
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,10 +26,10 @@ public class Epic extends Task {
                 LocalDateTime startTime,
                 LocalDateTime endTime
     ) {
-       super(id, taskType, name, status, description, duration, startTime, endTime);
+        super(id, taskType, name, status, description, duration, startTime, endTime);
     }
 
-    public List<Integer> getSubtaskIds () {
+    public List<Integer> getSubtaskIds() {
         return subtaskIds;
     }
 
@@ -47,7 +48,7 @@ public class Epic extends Task {
                 + getTaskType() + ","
                 + name + ","
                 + status + ","
-                + description  + ","
+                + description + ","
                 + duration + ","
                 + startTime + ","
                 + endTime + "\n";

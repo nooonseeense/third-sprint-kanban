@@ -1,4 +1,4 @@
-package epics;
+package tasks;
 
 import constants.Status;
 import constants.TaskType;
@@ -19,6 +19,7 @@ public class Subtask extends Task {
         this.epicId = epicId;
         endTime = getEndTime();
     }
+
     // Конструктор для метода public Task fromString(String value)
     public Subtask(int id,
                    TaskType taskType,
@@ -49,7 +50,7 @@ public class Subtask extends Task {
                 + getTaskType() + ","
                 + name + ","
                 + status + ","
-                + description  + ","
+                + description + ","
                 + duration + ","
                 + startTime + ","
                 + endTime + ","
