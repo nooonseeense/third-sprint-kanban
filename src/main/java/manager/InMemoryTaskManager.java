@@ -1,9 +1,9 @@
 package manager;
 
 import constants.Status;
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+import epics.Epic;
+import epics.Subtask;
+import epics.Task;
 import util.DateTimeComparator;
 
 import java.util.*;
@@ -217,8 +217,8 @@ public class InMemoryTaskManager implements TaskManager {
             o1 = sortedTasksByDate[i];
 
             for (int j = 1; j < sortedTasksByDate.length; j++) {
-
                 o2 = sortedTasksByDate[j];
+
                 if (
                         (o1.getStartTime().isEqual(o2.getEndTime()))
                         || o1.getStartTime().isBefore(o2.getEndTime())

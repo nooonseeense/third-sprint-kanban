@@ -1,6 +1,6 @@
 package util;
 
-import tasks.Task;
+import epics.Task;
 
 import java.util.Comparator;
 

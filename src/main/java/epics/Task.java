@@ -1,4 +1,4 @@
-package tasks;
+package epics;
 
 import constants.Status;
 import constants.TaskType;

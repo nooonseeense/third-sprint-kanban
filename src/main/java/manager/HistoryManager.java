@@ -1,6 +1,6 @@
 package manager;
 
-import tasks.Task;
+import epics.Task;
 import java.util.List;
 
 public interface HistoryManager {
