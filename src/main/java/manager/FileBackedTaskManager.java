@@ -44,11 +44,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTasksManager.getSubtaskById(subtask2.getId());
 
         Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS,
-                20, LocalDateTime.of(2020, Month.NOVEMBER, 10, 8, 0), epic1.getId());
+                120, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 40), epic1.getId());
         fileBackedTasksManager.addSubtask(subtask3);
         fileBackedTasksManager.getSubtaskById(subtask3.getId());
 
-        System.out.println(fileBackedTasksManager.getPrioritizedTasks());
+        Subtask subtask4 = new Subtask("Подзадача[4]", "Описание[4]", Status.IN_PROGRESS,
+                20, LocalDateTime.of(2020, Month.AUGUST, 20, 21, 40), epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask4);
+        fileBackedTasksManager.getSubtaskById(subtask4.getId());
+
+        fileBackedTasksManager.getPrioritizedTasks();
     }
 
     private void save() {
