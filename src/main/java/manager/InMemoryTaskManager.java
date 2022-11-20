@@ -4,6 +4,8 @@ import constants.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+import util.DateTimeComparator;
+
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -53,7 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic) {
         epics.put(epic.getId(), epic);
     }
-
+ 
     @Override
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
@@ -193,6 +195,17 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setStatus(Status.IN_PROGRESS);
             }
         }
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        List<Task> sortedTasksByDate = new ArrayList<>();
+
+        sortedTasksByDate.addAll(getTasks());
+        sortedTasksByDate.addAll(getSubtask());
+        sortedTasksByDate.sort(new DateTimeComparator());
+
+        return sortedTasksByDate;
     }
 
     @Override
