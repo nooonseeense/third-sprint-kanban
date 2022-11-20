@@ -198,14 +198,37 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getPrioritizedTasks() {
-        List<Task> sortedTasksByDate = new ArrayList<>();
+    public Set<Task> getPrioritizedTasks() {
+        Set<Task> sortedTasksByDate = new TreeSet<>(new DateTimeComparator());
 
         sortedTasksByDate.addAll(getTasks());
         sortedTasksByDate.addAll(getSubtask());
-        sortedTasksByDate.sort(new DateTimeComparator());
 
+        findInterSectionAtLocalDateTimeTask(sortedTasksByDate.toArray(new Task[0]));
         return sortedTasksByDate;
+    }
+
+    private void findInterSectionAtLocalDateTimeTask(Task[] sortedTasksByDate) {
+        Task o1;
+        Task o2;
+
+        for (int i = 0; i < sortedTasksByDate.length; i++) {
+            o1 = sortedTasksByDate[i];
+
+            for (int j = 1; j < sortedTasksByDate.length; j++) {
+
+                o2 = sortedTasksByDate[j];
+                if (
+                        (o1.getStartTime().isEqual(o2.getEndTime()))
+                        || o1.getStartTime().isBefore(o2.getEndTime())
+                        && (o1.getStartTime().isEqual(o2.getStartTime())
+                        || o1.getEndTime().isAfter(o2.getStartTime()))
+                ) {
+                    if (o1.getId() == o2.getId()) { continue;}
+                    System.out.println("Есть пересечение в задаче: " + o1.getId());
+                }
+            }
+        }
     }
 
     @Override
