@@ -208,7 +208,8 @@ public class InMemoryTaskManager implements TaskManager {
         return sortedTasksByDate;
     }
 
-    private void findInterSectionAtLocalDateTimeTask(Task[] sortedTasksByDate) {
+    @Override
+    public void findInterSectionAtLocalDateTimeTask(Task[] sortedTasksByDate) {
         Task o1;
         Task o2;
 

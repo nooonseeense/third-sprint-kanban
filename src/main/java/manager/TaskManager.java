@@ -5,6 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.List;
+import java.util.Set;
 
 interface TaskManager {
     void addTask(Task task);
@@ -33,7 +34,8 @@ interface TaskManager {
 
     void updateEpicStatus(Epic epic);
 
-    List<Task> getPrioritizedTasks();
+    Set<Task> getPrioritizedTasks();
+    void findInterSectionAtLocalDateTimeTask(Task[] sortedTasksByDate);
 
     void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks);
     void calculateStartAndEndTimeEpic(Epic epic);
