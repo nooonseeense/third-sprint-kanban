@@ -53,7 +53,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTasksManager.addSubtask(subtask4);
         fileBackedTasksManager.getSubtaskById(subtask4.getId());
 
-        fileBackedTasksManager.getPrioritizedTasks();
+        System.out.println(fileBackedTasksManager.getPrioritizedTasks());
     }
 
     private void save() {
@@ -63,7 +63,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             sortedTasksById.addAll(tasks.values());
             sortedTasksById.addAll(epics.values());
             sortedTasksById.addAll(subtasks.values());
-
             sortedTasksById.sort(Comparator.comparingInt(Task::getId));
 
             bufferedWriter.write("id,type,name,status,description,duration,startTime,endTime,epic\n");
