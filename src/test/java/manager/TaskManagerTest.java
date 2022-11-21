@@ -12,7 +12,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class TaskManagerTest<T extends TaskManager> {    // Здесь мы тестируем все общие методы
+public abstract class TaskManagerTest<T extends TaskManager> {
+    protected HistoryManager historyManager = new InMemoryHistoryManager();
     protected T taskManager;
 
     public TaskManagerTest(T taskManager) {
@@ -68,6 +69,248 @@ public abstract class TaskManagerTest<T extends TaskManager> {    // Здесь 
         assertEquals(1, subtasks.size(), "Wrong amount subtasks.");
         assertEquals(subtask, subtasks.get(0), "Object epics do not match.");
         assertEquals(epic.getSubtaskIds().get(0), subtask.getId(), "Epic has not subtask");
+    }
+
+    @Test
+    public void updateTaskTest() {
+        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
+        taskManager.addTask(task);
+
+        task.setStartTime(LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
+        taskManager.updateTask(task);
+        assertEquals(task.getStartTime(), taskManager.getTasks().get(task.getId()).getStartTime());
+    }
+
+    @Test
+    public void updateEpicTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.NEW,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask);
+
+        epic.setStatus(Status.IN_PROGRESS);
+        taskManager.updateEpic(epic);
+        assertEquals(epic.getStatus(), taskManager.getEpics().get(epic.getId()).getStatus());
+    }
+
+    @Test
+    public void updateSubtaskTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.NEW,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask);
+
+        subtask.setStatus(Status.DONE);
+        taskManager.updateSubtask(subtask);
+
+        assertEquals(subtask.getStatus(), taskManager.getSubtask().get(0).getStatus());
+        assertEquals(Status.DONE, taskManager.getEpics().get(0).getStatus());
+        assertEquals(subtask.getStartTime(), epic.getStartTime(), "Start time does not match");
+        assertEquals(subtask.getEndTime(), epic.getEndTime(), "End time does not match");
+    }
+
+    @Test
+    public void getTasksTest() {
+        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
+        assertEquals(0, taskManager.getTasks().size(), "The list is not empty");
+
+        taskManager.deleteTaskInIds(task.getId());
+        final IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class,
+                () -> taskManager.getTasks().get(task.getId()));
+        assertEquals("Index 0 out of bounds for length 0", exception.getMessage());
+
+        taskManager.addTask(task);
+        assertEquals(1, taskManager.getTasks().size(), "Wrong number of objects in sheet");
+    }
+
+    @Test
+    public void getEpicsTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        assertEquals(0, taskManager.getEpics().size(), "The list is not empty");
+
+        taskManager.deleteTaskInIds(epic.getId());
+        final IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class,
+                () -> taskManager.getEpics().get(epic.getId()));
+        assertEquals("Index 0 out of bounds for length 0", exception.getMessage());
+
+        taskManager.addEpic(epic);
+        assertEquals(1, taskManager.getEpics().size(), "Wrong number of objects in sheet");
+    }
+
+    @Test
+    public void getSubtaskTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.DONE,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+
+        assertEquals(0, taskManager.getSubtask().size(), "The list is not empty");
+
+        final IndexOutOfBoundsException indexOutOfBoundsException = assertThrows(IndexOutOfBoundsException.class,
+                () -> taskManager.getSubtask().get(subtask.getId()));
+        assertEquals("Index 0 out of bounds for length 0", indexOutOfBoundsException.getMessage());
+
+        final NullPointerException nullPointerException = assertThrows(NullPointerException.class,
+                () -> taskManager.deleteSubTaskInIds(subtask.getId()));
+        assertNull(nullPointerException.getMessage());
+    }
+
+    @Test
+    public void taskAllDeleteTest() {
+        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
+
+        taskManager.addTask(task);
+        assertEquals(1, taskManager.getTasks().size(), "The task has not been added");
+
+        taskManager.taskAllDelete();
+        assertEquals(0, taskManager.getTasks().size(), "List is not empty");
+    }
+
+    @Test
+    public void epicAllDeleteTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+
+        taskManager.addEpic(epic);
+        assertEquals(1, taskManager.getEpics().size(), "The epic has not been added");
+
+        taskManager.epicAllDelete();
+        assertEquals(0, taskManager.getEpics().size(), "List is not empty");
+    }
+
+    @Test
+    public void subtaskAllDeleteTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.NEW,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask);
+
+        assertEquals(1, taskManager.getSubtask().size(), "The subtasks has not been added");
+        assertEquals(subtask.getId(), epic.getSubtaskIds().get(0), "Subtask has no binding to epic");
+
+        taskManager.epicAllDelete();
+        assertEquals(0, taskManager.getSubtask().size(), "List is not empty");
+    }
+
+    @Test
+    public void getTaskByIdTest() {
+        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
+        taskManager.addTask(task);
+        assertEquals(task, taskManager.getTaskById(task.getId()), "Object with this id does not exist");
+    }
+
+    @Test
+    public void getEpicByIdTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        taskManager.addEpic(epic);
+        assertEquals(epic, taskManager.getEpicById(epic.getId()), "Object with this id does not exist");
+    }
+
+    @Test
+    public void getSubtaskByIdTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.NEW,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask);
+
+        assertEquals(subtask, taskManager.getSubtaskById(subtask.getId()));
+    }
+
+    @Test
+    public void deleteTaskInIdsTest() {
+        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
+        taskManager.addTask(task);
+        taskManager.deleteTaskInIds(task.getId());
+
+        assertEquals(0, taskManager.getTasks().size(), "Task has not been deleted");
+        assertEquals(0, historyManager.getHistory().size(), "Task has not been deleted in history");
+    }
+
+    @Test
+    public void deleteEpicInIdsTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        taskManager.addEpic(epic);
+        taskManager.deleteEpicInIds(epic.getId());
+
+        assertEquals(0, taskManager.getEpics().size(), "Task has not been deleted");
+        assertEquals(0, historyManager.getHistory().size(), "Task has not been deleted in history");
+    }
+
+    @Test
+    public void deleteSubTaskInIdsTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.IN_PROGRESS,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask);
+        taskManager.deleteSubTaskInIds(subtask.getId());
+
+        assertEquals(0, taskManager.getEpics().size(), "Epic not removed after subtask completed");
+        assertEquals(Status.NEW, epic.getStatus(), "Epic status is wrong");
+        assertEquals(0, taskManager.getSubtask().size(), "Task has not been deleted");
+        assertEquals(0, historyManager.getHistory().size(), "Task has not been deleted in history");
+    }
+
+    @Test
+    public void getPrioritizedTasksTest() {
+        Task task1 = new Task("Task1", "Description1", Status.NEW, 60,
+                LocalDateTime.of(2022, Month.DECEMBER, 2, 14, 30));
+        Task task2 = new Task("Task2", "Description2", Status.NEW, 60,
+                LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+
+        List<Task> sortedTasks = taskManager.getPrioritizedTasks();
+
+        assertEquals(0, sortedTasks.get(task2.getId()).getId(), "Objects in sheet are not sorted");
+    }
+
+    @Test
+    public void getHistoryTest() {
+        Task task1 = new Task("Task1", "Description1", Status.NEW, 60,
+                LocalDateTime.of(2022, Month.DECEMBER, 2, 14, 30));
+        taskManager.addTask(task1);
+        taskManager.getTaskById(task1.getId());
+
+        assertEquals(task1.getId(), taskManager.getHistory().get(task1.getId()).getId());
     }
 
     @Test
@@ -136,7 +379,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {    // Здесь 
     }
 
     @Test
-    public void shouldReturnEpicStatusInProgressWithInProgressSubtaskStatus() {
+    public void shouldReturnEpicStatusInProgress() {
         Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
         Subtask subtask = new Subtask(
                 "SUBTASK",

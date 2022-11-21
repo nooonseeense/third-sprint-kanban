@@ -2,17 +2,18 @@ package manager;
 
 import org.junit.jupiter.api.Test;
 
-class HistoryManagerTest {
+class HistoryManagerTest<T extends HistoryManager> {
 
     @Test
-    void add() {
+    void addTest() {
+
     }
 
     @Test
-    void remove() {
+    void removeTest() {
     }
 
     @Test
-    void getHistory() {
+    void getHistoryTest() {
     }
 }
