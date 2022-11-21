@@ -34,11 +34,8 @@ interface TaskManager {
 
     void updateEpicStatus(Epic epic);
 
-    Set<Task> getPrioritizedTasks();
-    void findInterSectionAtLocalDateTimeTask(Task[] sortedTasksByDate);
-
-    void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks);
-    void calculateStartAndEndTimeEpic(Epic epic);
+    List<Task> getPrioritizedTasks();
+    void findInterSectionAtLocalDateTimeTask(List<Task> sortedTasksByDate);
 
     List<Task> getHistory();
 }
