@@ -47,7 +47,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public void updateTask(Task task) { // через set
         tasks.put(task.getId(), task);
     }
 
@@ -198,26 +198,27 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Set<Task> getPrioritizedTasks() {
-        Set<Task> sortedTasksByDate = new TreeSet<>(new DateTimeComparator());
+    public List<Task> getPrioritizedTasks() {
+        List<Task> sortedTasksByDate = new LinkedList<>();
 
         sortedTasksByDate.addAll(getTasks());
         sortedTasksByDate.addAll(getSubtask());
+        sortedTasksByDate.sort(new DateTimeComparator());
+        findInterSectionAtLocalDateTimeTask(sortedTasksByDate);
 
-        findInterSectionAtLocalDateTimeTask(sortedTasksByDate.toArray(new Task[0]));
         return sortedTasksByDate;
     }
 
     @Override
-    public void findInterSectionAtLocalDateTimeTask(Task[] sortedTasksByDate) {
+    public void findInterSectionAtLocalDateTimeTask(List<Task> sortedTasksByDate) {
         Task o1;
         Task o2;
 
-        for (int i = 0; i < sortedTasksByDate.length; i++) {
-            o1 = sortedTasksByDate[i];
+        for (int i = 0; i < sortedTasksByDate.size(); i++) {
+            o1 = sortedTasksByDate.get(i);
 
-            for (int j = 1; j < sortedTasksByDate.length; j++) {
-                o2 = sortedTasksByDate[j];
+            for (int j = 1; j < sortedTasksByDate.size(); j++) {
+                o2 = sortedTasksByDate.get(j);
 
                 if (
                         (o1.getStartTime().isEqual(o2.getEndTime()))
@@ -232,8 +233,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
-    public void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks) {
+    private void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks) {
         int epicDuration = 0;
 
         for (Subtask subtask : newSubtasks) {
@@ -242,8 +242,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setDuration(epicDuration);
     }
 
-    @Override
-    public void calculateStartAndEndTimeEpic(Epic epic) {
+    private void calculateStartAndEndTimeEpic(Epic epic) {
         List<Subtask> allSubtasks = getSubtask();
         List<Subtask> newSubtasks = new LinkedList<>();
 
