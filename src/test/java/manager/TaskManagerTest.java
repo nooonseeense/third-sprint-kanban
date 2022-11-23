@@ -8,7 +8,6 @@ import tasks.Task;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -318,13 +317,69 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    private void calculateEpicDurationTest() {
+    public void calculateEpicDurationTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.IN_PROGRESS,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask);
+        List<Subtask> subtasks = new LinkedList<>();
+        subtasks.add(subtask);
+        taskManager.calculateEpicDuration(epic, subtasks);
+        assertEquals(60, epic.getDuration(), "Неправильное время продолжительности эпика.");
 
+        Subtask subtask2 = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.IN_PROGRESS,
+                550,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        taskManager.addSubtask(subtask2);
+        subtasks.add(subtask2);
+        taskManager.calculateEpicDuration(epic, subtasks);
+        assertEquals(610, epic.getDuration(), "Неправильное время продолжительности эпика.");
     }
 
     @Test
-    private void calculateStartAndEndTimeEpicTest() {
+    public void calculateStartAndEndTimeEpicTest() {
+        Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
+        Subtask subtask = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.IN_PROGRESS,
+                60,
+                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                epic.getId()
+        );
+        Subtask subtask2 = new Subtask(
+                "SUBTASK1",
+                "SUBTASK_DESCRIPTION",
+                Status.IN_PROGRESS,
+                50,
+                LocalDateTime.of(2021, Month.JULY, 14, 14, 0),
+                epic.getId()
+        );
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask);
+        taskManager.addSubtask(subtask2);
 
+        assertEquals(LocalDateTime.parse("2021-07-14T10:00"), epic.getStartTime());
+        assertEquals(LocalDateTime.parse("2021-07-14T11:50"), epic.getEndTime());
+
+        taskManager.subtaskAllDelete();
+        taskManager.updateEpic(epic);
+
+        assertNull(epic.getStartTime());
+        assertNull(epic.getEndTime());
+        assertEquals(0, epic.getDuration());
     }
 
     @Test
