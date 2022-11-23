@@ -15,7 +15,6 @@ public class Task implements Comparable<Task> {
     protected int duration;
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
-
     // Базовый конструктор
     public Task(String name,
                 String description,
@@ -30,14 +29,12 @@ public class Task implements Comparable<Task> {
         this.startTime = startTime;
         endTime = getEndTime();
     }
-
     // Конструктор для создания Epic
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
-
     // Конструктор для метода public Task fromString(String value)
     public Task(int id,
                 TaskType taskType,
@@ -99,6 +96,9 @@ public class Task implements Comparable<Task> {
     }
 
     public LocalDateTime getEndTime() {
+        if (getStartTime() == null) {
+            return null;
+        }
         return startTime.plusSeconds(duration * 60L);
     }
 
