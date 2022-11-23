@@ -4,7 +4,6 @@ import constants.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -53,16 +52,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
+        if (searchForTheIntersectionOfTask(task)) {
+            return;
+        }
         tasks.put(task.getId(), task);
     }
 
     @Override
     public void updateEpic(Epic epic) {
+        calculateStartAndEndTimeEpic(epic);
         epics.put(epic.getId(), epic);
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
+        if (searchForTheIntersectionOfTask(subtask)) {
+            return;
+        }
         subtasks.put(subtask.getId(), subtask);
         Epic epic = epics.get(subtask.getEpicId());
         updateEpicStatus(epic);
@@ -254,7 +260,11 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
+
         if (newSubtasks.size() == 0) {
+            epic.setStartTime(null);
+            epic.setEndTime(null);
+            epic.setDuration(0);
             return;
         }
 
