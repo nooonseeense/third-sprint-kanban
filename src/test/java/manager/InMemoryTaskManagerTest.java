@@ -6,4 +6,5 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         super(new InMemoryTaskManager());
     }
 
+
 }

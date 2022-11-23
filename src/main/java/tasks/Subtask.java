@@ -19,7 +19,6 @@ public class Subtask extends Task {
         this.epicId = epicId;
         endTime = getEndTime();
     }
-
     // Конструктор для метода public Task fromString(String value)
     public Subtask(int id,
                    TaskType taskType,
@@ -32,6 +31,11 @@ public class Subtask extends Task {
                    int epicId
     ) {
         super(id, taskType, name, status, description, duration, startTime, endTime);
+        this.epicId = epicId;
+    }
+
+    public Subtask(String name, String description, Status status, int epicId) {
+        super(name, description, status);
         this.epicId = epicId;
     }
 

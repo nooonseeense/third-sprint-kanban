@@ -24,34 +24,42 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         FileBackedTaskManager fileBackedTasksManager = FileBackedTaskManager.loadFromFile(new File(HOME));
 
-        Task task1 = new Task("Задача", "Описание",
-                Status.NEW, 60, LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
-        fileBackedTasksManager.addTask(task1);
-        fileBackedTasksManager.getTaskById(task1.getId());
+//        Task task1 = new Task("Задача", "Описание", Status.NEW, 60,
+//                LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
+//        fileBackedTasksManager.addTask(task1);
+//        fileBackedTasksManager.getTaskById(task1.getId());
+
+        Task task2 = new Task("Задача", "Описание", Status.NEW, 120, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 40));
+        fileBackedTasksManager.addTask(task2);
+        fileBackedTasksManager.getTaskById(task2.getId());
 
         Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
         fileBackedTasksManager.addEpic(epic1);
         fileBackedTasksManager.getEpicById(epic1.getId());
-
-        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[2]", Status.DONE,
-                60, LocalDateTime.of(2021, Month.JULY, 14, 10, 0), epic1.getId());
-        fileBackedTasksManager.addSubtask(subtask1);
-        fileBackedTasksManager.getSubtaskById(subtask1.getId());
-
-        Subtask subtask2 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
-                60, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 30), epic1.getId());
-        fileBackedTasksManager.addSubtask(subtask2);
-        fileBackedTasksManager.getSubtaskById(subtask2.getId());
+//
+//        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[2]", Status.DONE, epic1.getId());
+//        fileBackedTasksManager.addSubtask(subtask1);
+//        fileBackedTasksManager.getSubtaskById(subtask1.getId());
 
         Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS,
-                120, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 40), epic1.getId());
+                120, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 50), epic1.getId());
         fileBackedTasksManager.addSubtask(subtask3);
         fileBackedTasksManager.getSubtaskById(subtask3.getId());
 
-        Subtask subtask4 = new Subtask("Подзадача[4]", "Описание[4]", Status.IN_PROGRESS,
-                20, LocalDateTime.of(2020, Month.AUGUST, 20, 21, 40), epic1.getId());
+        Subtask subtask4 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
+                epic1.getId());
         fileBackedTasksManager.addSubtask(subtask4);
         fileBackedTasksManager.getSubtaskById(subtask4.getId());
+
+        Subtask subtask5 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
+                epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask5);
+        fileBackedTasksManager.getSubtaskById(subtask5.getId());
+
+        Subtask subtask6 = new Subtask("Подзадача[4]", "Описание[4]", Status.IN_PROGRESS,
+                120, LocalDateTime.of(2021, Month.AUGUST, 20, 20, 30), epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask6);
+        fileBackedTasksManager.getSubtaskById(subtask6.getId());
 
         System.out.println(fileBackedTasksManager.getPrioritizedTasks());
     }
@@ -76,9 +84,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private <T extends Task> void addTasksToFile(BufferedWriter bufferedWriter, Collection<T> tasks)
             throws IOException {
         for (T task : tasks) {
-            if (task.getStartTime() == null || task.getEndTime() == null) {
-                continue;
-            }
             bufferedWriter.write(task.toString());
         }
     }
@@ -146,8 +151,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(valueSplit[3]);
         String description = valueSplit[4];
         int duration = Integer.parseInt(valueSplit[5]);
-        LocalDateTime startTime = LocalDateTime.parse(valueSplit[6]);
-        LocalDateTime endTime = LocalDateTime.parse(valueSplit[7]);
+        LocalDateTime startTime;
+        LocalDateTime endTime;
+
+        if (!(valueSplit[6].equals("null"))) {
+            startTime = LocalDateTime.parse(valueSplit[6]);
+            endTime = LocalDateTime.parse(valueSplit[7]);
+        } else {
+            startTime = null;
+            endTime = null;
+        }
 
         switch (type) {
             case TASK:

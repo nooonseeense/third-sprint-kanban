@@ -6,7 +6,7 @@ import constants.TaskType;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Comparable<Task> {
     protected String name;
     protected String description;
     protected int id;
@@ -100,6 +100,20 @@ public class Task {
 
     public LocalDateTime getEndTime() {
         return startTime.plusSeconds(duration * 60L);
+    }
+
+    @Override
+    public int compareTo(Task o) {
+        if (this.startTime == null && o.startTime == null) {
+            return Integer.compare(this.getId(), o.getId());
+        }
+        if (this.startTime == null) {
+            return 1;
+        }
+        if (o.startTime == null) {
+            return -1;
+        }
+        return this.startTime.compareTo(o.startTime);
     }
 
     @Override

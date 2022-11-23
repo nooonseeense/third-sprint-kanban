@@ -15,7 +15,6 @@ public class Epic extends Task {
     ) {
         super(name, description, Status.NEW);
     }
-
     // Конструктор для метода public Task fromString(String value)
     public Epic(int id,
                 TaskType taskType,

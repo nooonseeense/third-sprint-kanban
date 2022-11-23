@@ -8,7 +8,10 @@ import tasks.Task;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -298,9 +301,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
-        List<Task> sortedTasks = taskManager.getPrioritizedTasks();
+        Set<Task> sortedTasks = taskManager.getPrioritizedTasks();
+        List<Task> sortedTasksList = new LinkedList<>(sortedTasks);
 
-        assertEquals(0, sortedTasks.get(task2.getId()).getId(), "Objects in sheet are not sorted");
+        assertEquals(0, sortedTasksList.get(task2.getId()).getId(), "Objects in sheet are not sorted");
     }
 
     @Test
@@ -311,6 +315,16 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.getTaskById(task1.getId());
 
         assertEquals(task1.getId(), taskManager.getHistory().get(task1.getId()).getId());
+    }
+
+    @Test
+    private void calculateEpicDurationTest() {
+
+    }
+
+    @Test
+    private void calculateStartAndEndTimeEpicTest() {
+
     }
 
     @Test
