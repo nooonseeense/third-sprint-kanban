@@ -24,10 +24,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         FileBackedTaskManager fileBackedTasksManager = FileBackedTaskManager.loadFromFile(new File(HOME));
 
-//        Task task1 = new Task("Задача", "Описание", Status.NEW, 60,
-//                LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
-//        fileBackedTasksManager.addTask(task1);
-//        fileBackedTasksManager.getTaskById(task1.getId());
+        Task task1 = new Task("Задача", "Описание", Status.NEW, 60,
+                LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
+        fileBackedTasksManager.addTask(task1);
+        fileBackedTasksManager.getTaskById(task1.getId());
 
         Task task2 = new Task("Задача", "Описание", Status.NEW, 120, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 40));
         fileBackedTasksManager.addTask(task2);
@@ -36,18 +36,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
         fileBackedTasksManager.addEpic(epic1);
         fileBackedTasksManager.getEpicById(epic1.getId());
-//
-//        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[2]", Status.DONE, epic1.getId());
-//        fileBackedTasksManager.addSubtask(subtask1);
-//        fileBackedTasksManager.getSubtaskById(subtask1.getId());
+
+        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[2]", Status.IN_PROGRESS,
+                 epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask1);
+        fileBackedTasksManager.getSubtaskById(subtask1.getId());
 
         Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS,
-                120, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 50), epic1.getId());
+                120, LocalDateTime.of(2020, Month.AUGUST, 20, 23, 50), epic1.getId());
         fileBackedTasksManager.addSubtask(subtask3);
         fileBackedTasksManager.getSubtaskById(subtask3.getId());
 
         Subtask subtask4 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
-                epic1.getId());
+                40, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 50), epic1.getId());
         fileBackedTasksManager.addSubtask(subtask4);
         fileBackedTasksManager.getSubtaskById(subtask4.getId());
 
@@ -61,7 +62,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTasksManager.addSubtask(subtask6);
         fileBackedTasksManager.getSubtaskById(subtask6.getId());
 
-        System.out.println(fileBackedTasksManager.getPrioritizedTasks());
+        fileBackedTasksManager.subtaskAllDelete();
+        fileBackedTasksManager.updateEpic(epic1);
+        System.out.println(epic1);
+
     }
 
     private void save() {
