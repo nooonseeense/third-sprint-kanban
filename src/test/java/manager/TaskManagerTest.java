@@ -20,6 +20,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
+
     }
 
     @Test
@@ -285,7 +286,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addSubtask(subtask);
         taskManager.deleteSubTaskInIds(subtask.getId());
 
-        assertEquals(0, taskManager.getEpics().size(), "Epic not removed after subtask completed");
         assertEquals(Status.NEW, epic.getStatus(), "Epic status is wrong");
         assertEquals(0, taskManager.getSubtask().size(), "Task has not been deleted");
         assertEquals(0, historyManager.getHistory().size(), "Task has not been deleted in history");
