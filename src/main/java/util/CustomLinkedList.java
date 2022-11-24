@@ -26,22 +26,22 @@ public class CustomLinkedList<Task> implements CustomList<Task> {
             return;
         }
 
-        final CustomNode<Task> prev = node.prev; // ССЫЛКА на предыдущую ноду
-        final CustomNode<Task> next = node.next; // ССЫЛКА на следующую ноду
+        final CustomNode<Task> prev = node.prev;
+        final CustomNode<Task> next = node.next;
 
-        if (prev == null) { // ЕСЛИ предыдущий узел == null, ТО головой списка становится СЛЕДУЮЩИЙ узел
+        if (prev == null) {
             head = next;
-        } else { // ЕСЛИ узел находится в центре списка, ТО:
-            prev.next = next; // ТО поле NEXT у предыдущей ноды, начинает ссылаться на поле NEXT удаляемой
-            node.prev = null; // поле PREV у удаляемой ноды зануляем, т.к мы изменили ссылки и сохранили связь
+        } else {
+            prev.next = next;
+            node.prev = null;
         }
-        if (next == null) { // ЕСЛИ следующий узел == null, то хвостом списка становится ПРЕДЫДУЩИЙ узел
+        if (next == null) {
             tail = prev;
-        } else { // ЕСЛИ узел находится в центре списка, ТО:
-            next.prev = prev; // ТО поле PREV у следующей ноды, начинает ссылаться на поле PREV удаляемой
-            node.next = null; // поле NEXT у удаляемой ноды зануляем, т.к мы изменили ссылки и сохранили связь
+        } else {
+            next.prev = prev;
+            node.next = null;
         }
-        node.task = null; // Зануляем значение узла
+        node.task = null;
     }
 
     @Override
