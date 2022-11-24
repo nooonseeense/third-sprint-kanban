@@ -38,7 +38,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTasksManager.getEpicById(epic1.getId());
 
         Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[2]", Status.IN_PROGRESS,
-                 epic1.getId());
+                epic1.getId());
         fileBackedTasksManager.addSubtask(subtask1);
         fileBackedTasksManager.getSubtaskById(subtask1.getId());
 
@@ -62,9 +62,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTasksManager.addSubtask(subtask6);
         fileBackedTasksManager.getSubtaskById(subtask6.getId());
 
-        fileBackedTasksManager.subtaskAllDelete();
-        fileBackedTasksManager.updateEpic(epic1);
-        System.out.println(epic1);
+        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+        System.out.println(inMemoryHistoryManager.getHistory());
 
     }
 
@@ -101,7 +100,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return stringBuilder.toString();
     }
 
-    private static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             FileBackedTaskManager fileBackedTasksManager = new FileBackedTaskManager(file);
             InMemoryTaskManager inMemoryTasksManager = new InMemoryTaskManager();
