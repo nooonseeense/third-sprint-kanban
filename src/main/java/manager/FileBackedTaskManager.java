@@ -13,6 +13,7 @@ import java.time.Month;
 import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
+    private static final String HEADER = "id,type,name,status,description,duration,startTime,endTime,epic";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -61,10 +62,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 120, LocalDateTime.of(2021, Month.AUGUST, 20, 20, 30), epic1.getId());
         fileBackedTasksManager.addSubtask(subtask6);
         fileBackedTasksManager.getSubtaskById(subtask6.getId());
-
-        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
-        System.out.println(inMemoryHistoryManager.getHistory());
-
     }
 
     private void save() {
@@ -76,7 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             sortedTasksById.addAll(subtasks.values());
             sortedTasksById.sort(Comparator.comparingInt(Task::getId));
 
-            bufferedWriter.write("id,type,name,status,description,duration,startTime,endTime,epic\n");
+            bufferedWriter.write(HEADER + "\n");
             addTasksToFile(bufferedWriter, sortedTasksById);
             bufferedWriter.write("\n" + historyToString(historyManager) + "\n" + "\n");
         } catch (IOException e) {
@@ -93,9 +90,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private static String historyToString(HistoryManager historyManager) {
         StringBuilder stringBuilder = new StringBuilder();
+        List<Task> taskHistory = historyManager.getHistory();
 
-        for (Task record : historyManager.getHistory()) {
-            stringBuilder.append(record.getId()).append(",");
+        for (int i = 0; i < taskHistory.size(); i++) {
+            if (i == taskHistory.size() - 1) {
+                stringBuilder.append(taskHistory.get(i).getId());
+                break;
+            }
+            stringBuilder.append(taskHistory.get(i).getId()).append(",");
         }
         return stringBuilder.toString();
     }
@@ -107,12 +109,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             HistoryManager historyManager = Managers.getDefaultHistory();
             Map<Integer, Task> tempStorageOfTasks = new HashMap<>();
 
+
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine();
 
-                if (line.contains("id,type,name,status,description,duration,startTime,endTime,epic")
-                        || line.equals("")
-                ) {
+                if (line.contains(HEADER) || line.equals("")) {
                     continue;
                 }
 
@@ -185,11 +186,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private static List<Integer> historyFromString(String value) {
-        String[] valueSplit = value.split(",");
         List<Integer> historyIds = new LinkedList<>();
 
-        for (String num : valueSplit) {
-            historyIds.add(Integer.parseInt(num));
+        if (!value.isBlank()) {
+            String[] valueSplit = value.split(",");
+
+            for (String num : valueSplit) {
+                historyIds.add(Integer.parseInt(num));
+            }
         }
         return historyIds;
     }
@@ -214,23 +218,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Task getTaskById(int id) {
-        historyManager.add(tasks.get(id));
+        Task task = tasks.get(id);
         save();
-        return tasks.get(id);
+        return task;
     }
 
     @Override
     public Epic getEpicById(int id) {
-        historyManager.add(epics.get(id));
+        Epic epic = epics.get(id);
         save();
-        return epics.get(id);
+        return epic;
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
-        historyManager.add(subtasks.get(id));
+        Subtask subtask = subtasks.get(id);
         save();
-        return subtasks.get(id);
+        return subtask;
     }
 
     @Override
