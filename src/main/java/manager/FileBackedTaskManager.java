@@ -53,11 +53,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 120, LocalDateTime.of(2021, Month.AUGUST, 20, 20, 30), epic1.getId());
         fileBackedTasksManager.addSubtask(subtask5);
         fileBackedTasksManager.getSubtaskById(subtask5.getId());
-
-        Subtask subtask6 = new Subtask("Подзадача[4]", "Описание[4]", Status.IN_PROGRESS, epic1.getId());
-        fileBackedTasksManager.addSubtask(subtask6);
-        fileBackedTasksManager.getSubtaskById(subtask6.getId());
-
     }
 
     private void save() {

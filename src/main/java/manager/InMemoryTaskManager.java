@@ -171,8 +171,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskInIds(int id) {
-        tasks.remove(id);
         sortedListTasksAndSubtasks.remove(tasks.get(id));
+        tasks.remove(id);
         historyManager.remove(id);
     }
 
@@ -260,15 +260,15 @@ public class InMemoryTaskManager implements TaskManager {
     public void calculateStartAndEndTimeEpic(Epic epic) {
         int epicDuration = 0;
 
+        if (epic.getSubtaskIds().size() == 0) {
+            epic.setStartTime(null);
+            epic.setEndTime(null);
+            epic.setDuration(0);
+            return;
+        }
+
         for (Integer subtaskId : epic.getSubtaskIds()) {
             Subtask subtask = subtasks.get(subtaskId);
-
-            if (epic.getSubtaskIds().size() == 0) {
-                epic.setStartTime(null);
-                epic.setEndTime(null);
-                epic.setDuration(0);
-                return;
-            }
 
             if (subtask.getStartTime() != null) {
                 epic.setEndTime(subtask.getEndTime());
