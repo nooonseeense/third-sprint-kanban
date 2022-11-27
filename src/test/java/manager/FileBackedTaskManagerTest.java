@@ -13,8 +13,7 @@ import java.time.Month;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
-    FileBackedTaskManager fileBackedTasksManager =
-            FileBackedTaskManager.loadFromFile(new File("src/main/java/data/data.csv"));
+    FileBackedTaskManager fileBackedTasksManager = FileBackedTaskManager.loadFromFile(new File("src/main/java/data/data.csv"));
 
     public FileBackedTaskManagerTest() {
         super(new FileBackedTaskManager(new File("src/main/java/data/data.csv")));

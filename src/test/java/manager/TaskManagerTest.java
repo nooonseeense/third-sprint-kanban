@@ -130,6 +130,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void getTasksTest() {
         Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
         assertEquals(0, taskManager.getTasks().size(), "The list is not empty");
+        taskManager.addTask(task);
 
         taskManager.deleteTaskInIds(task.getId());
         final IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class,
@@ -144,8 +145,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void getEpicsTest() {
         Epic epic = new Epic("EPIC", "EPIC_DESCRIPTION");
         assertEquals(0, taskManager.getEpics().size(), "The list is not empty");
+        taskManager.addEpic(epic);
 
-        taskManager.deleteTaskInIds(epic.getId());
+        taskManager.deleteEpicInIds(epic.getId());
         final IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class,
                 () -> taskManager.getEpics().get(epic.getId()));
         assertEquals("Index 0 out of bounds for length 0", exception.getMessage());
@@ -329,9 +331,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         );
         taskManager.addEpic(epic);
         taskManager.addSubtask(subtask);
-        List<Subtask> subtasks = new LinkedList<>();
-        subtasks.add(subtask);
-        //taskManager.calculateEpicDuration(epic, subtasks);
         assertEquals(60, epic.getDuration(), "Неправильное время продолжительности эпика.");
 
         Subtask subtask2 = new Subtask(
@@ -339,12 +338,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 "SUBTASK_DESCRIPTION",
                 Status.IN_PROGRESS,
                 550,
-                LocalDateTime.of(2021, Month.JULY, 14, 10, 0),
+                LocalDateTime.of(2021, Month.NOVEMBER, 14, 10, 0),
                 epic.getId()
         );
         taskManager.addSubtask(subtask2);
-        subtasks.add(subtask2);
-        //taskManager.calculateEpicDuration(epic, subtasks);
         assertEquals(610, epic.getDuration(), "Неправильное время продолжительности эпика.");
     }
 
