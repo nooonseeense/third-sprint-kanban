@@ -8,9 +8,9 @@ import tasks.Task;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected final HashMap<Integer, Task> tasks = new HashMap<>();
-    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, Subtask> subtasks = new HashMap<>();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     protected final Set<Task> sortedListTasksAndSubtasks = new TreeSet<>();
     private int generator = 0;
@@ -258,36 +258,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void calculateStartAndEndTimeEpic(Epic epic) {
-        List<Subtask> allSubtasks = getSubtask();
-        List<Subtask> newSubtasks = new LinkedList<>();
         int epicDuration = 0;
 
         for (Integer subtaskId : epic.getSubtaskIds()) {
-            for (Subtask subtask : allSubtasks) {
-                if (subtaskId == subtask.getId()) {
-                    newSubtasks.add(subtask);
+            Subtask subtask = subtasks.get(subtaskId);
+
+            if (epic.getSubtaskIds().size() == 0) {
+                epic.setStartTime(null);
+                epic.setEndTime(null);
+                epic.setDuration(0);
+                return;
+            }
+
+            if (subtask.getStartTime() != null) {
+                epic.setEndTime(subtask.getEndTime());
+                epicDuration += subtask.getDuration();
+                epic.setDuration(epicDuration);
+
+                if (epic.getStartTime() != null) {
+                    continue;
+                } else {
+                    epic.setStartTime(subtask.getStartTime());
                 }
             }
         }
-
-        if (newSubtasks.size() == 0) {
-            epic.setStartTime(null);
-            epic.setEndTime(null);
-            epic.setDuration(0);
-            return;
-        }
-
-        if (newSubtasks.get(0).getStartTime() == null) {
-            epic.setStartTime(newSubtasks.get(newSubtasks.size() - 1).getStartTime());
-        } else {
-            epic.setStartTime(newSubtasks.get(0).getStartTime());
-        }
-        epic.setEndTime(newSubtasks.get(newSubtasks.size() - 1).getEndTime());
-
-        for (Subtask subtask : newSubtasks) {
-            epicDuration += subtask.getDuration();
-        }
-        epic.setDuration(epicDuration);
     }
 
     @Override
