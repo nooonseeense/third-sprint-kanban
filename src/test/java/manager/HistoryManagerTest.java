@@ -10,7 +10,6 @@ import java.time.Month;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class HistoryManagerTest<T extends HistoryManager> {
-    TaskManager taskManager = new InMemoryTaskManager();
     T historyManager;
 
     public HistoryManagerTest(T historyManager) {
@@ -19,37 +18,45 @@ public abstract class HistoryManagerTest<T extends HistoryManager> {
 
     @Test
     public void addTaskAndRemoveInHistoryTest() {
-        Task task1 = new Task("Задача", "Описание", Status.NEW);
-        Task task2 = new Task("Задача", "Описание", Status.DONE);
+        Task task1 = new Task(
+                0,
+                "Задача",
+                Status.NEW,
+                "Описание",
+                60,
+                LocalDateTime.of(2022, Month.NOVEMBER, 1, 15, 0),
+                LocalDateTime.of(2022, Month.NOVEMBER, 1, 16, 0)
+        );
+        Task task2 = new Task(
+                1,
+                "Задача2",
+                Status.IN_PROGRESS,
+                "Описание2",
+                65,
+                LocalDateTime.of(2022, Month.NOVEMBER, 1, 17, 0),
+                LocalDateTime.of(2022, Month.NOVEMBER, 1, 18, 5)
+        );
 
-        assertEquals(0, taskManager.getHistory().size(), "Список истории не пустой.");
+        assertEquals(0, historyManager.getHistory().size(), "Список истории не пустой.");
 
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-        taskManager.getTaskById(task1.getId());
-        taskManager.getTaskById(task1.getId());
-        taskManager.getTaskById(task2.getId());
+        historyManager.add(task1);
+        historyManager.add(task2);
 
-        assertEquals(2, taskManager.getHistory().size(), "Дублирование истории вызовов");
-        assertEquals(task2, taskManager.getHistory().get(1));
-    }
+        assertEquals(2, historyManager.getHistory().size(), "Дублирование истории вызовов");
+        assertEquals(task2, historyManager.getHistory().get(1));
 
+        Task task3 = new Task(
+                0,
+                "Задача",
+                Status.NEW,
+                "Описание",
+                60,
+                LocalDateTime.of(2022, Month.NOVEMBER, 1, 15, 0),
+                LocalDateTime.of(2022, Month.NOVEMBER, 1, 16, 0)
+        );
+        historyManager.add(task3);
+        historyManager.remove(task2.getId());
 
-    @Test
-    public void getHistoryTest() {
-        Task task1 = new Task("Задача", "Описание", Status.NEW, 60,
-                LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
-        Task task2 = new Task("Задача2", "Описание2", Status.NEW, 60,
-                LocalDateTime.of(2022, Month.DECEMBER, 3, 15, 40));
-
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-
-        assertEquals(0, taskManager.getHistory().size(), "Список истории не пустой.");
-
-        taskManager.getTaskById(task1.getId());
-        taskManager.getTaskById(task2.getId());
-
-        assertEquals(2, taskManager.getHistory().size(), "Список истории пустой.");
+        assertEquals(1, historyManager.getHistory().size());
     }
 }

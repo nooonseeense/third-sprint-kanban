@@ -13,10 +13,4 @@ public class InMemoryHistoryManagerTest extends HistoryManagerTest<InMemoryHisto
     public void addTaskAndRemoveInHistoryTest() {
         super.addTaskAndRemoveInHistoryTest();
     }
-
-    @Override
-    @Test
-    public void getHistoryTest() {
-        super.getHistoryTest();
-    }
 }
