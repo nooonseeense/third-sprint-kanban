@@ -37,7 +37,6 @@ public class Task implements Comparable<Task> {
     }
     // Конструктор для метода public Task fromString(String value)
     public Task(int id,
-                TaskType taskType,
                 String name,
                 Status status,
                 String description,
@@ -46,7 +45,7 @@ public class Task implements Comparable<Task> {
                 LocalDateTime endTime
     ) {
         this.id = id;
-        this.taskType = taskType;
+        taskType = getTaskType();
         this.name = name;
         this.status = status;
         this.description = description;
@@ -54,6 +53,7 @@ public class Task implements Comparable<Task> {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
 
     public int getId() {
         return id;

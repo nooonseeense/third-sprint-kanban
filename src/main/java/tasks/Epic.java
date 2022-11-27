@@ -6,6 +6,7 @@ import constants.TaskType;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
     private final List<Integer> subtaskIds = new LinkedList<>();
@@ -17,7 +18,6 @@ public class Epic extends Task {
     }
     // Конструктор для метода public Task fromString(String value)
     public Epic(int id,
-                TaskType taskType,
                 String name,
                 Status status,
                 String description,
@@ -25,7 +25,7 @@ public class Epic extends Task {
                 LocalDateTime startTime,
                 LocalDateTime endTime
     ) {
-        super(id, taskType, name, status, description, duration, startTime, endTime);
+        super(id, name, status, description, duration, startTime, endTime);
     }
 
     public List<Integer> getSubtaskIds() {
@@ -39,6 +39,20 @@ public class Epic extends Task {
     @Override
     public TaskType getTaskType() {
         return TaskType.EPIC;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtaskIds, epic.subtaskIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtaskIds);
     }
 
     @Override
