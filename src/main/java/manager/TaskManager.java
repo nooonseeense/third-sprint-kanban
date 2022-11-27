@@ -38,6 +38,8 @@ interface TaskManager {
 
     Subtask getSubtaskById(int id);
 
+    List<Integer> getEpicSubtasksList(int id);
+
     void deleteTaskInIds(int id);
 
     void deleteEpicInIds(int id);
@@ -49,8 +51,6 @@ interface TaskManager {
     Set<Task> getPrioritizedTasks();
 
     boolean searchForTheIntersectionOfTask(Task task);
-
-    void calculateEpicDuration(Epic epic, List<Subtask> newSubtasks);
 
     void calculateStartAndEndTimeEpic(Epic epic);
 
