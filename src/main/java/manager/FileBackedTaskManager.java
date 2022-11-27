@@ -38,6 +38,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 epic1.getId());
         fileBackedTasksManager.addSubtask(subtask1);
         fileBackedTasksManager.getSubtaskById(subtask1.getId());
+
+        Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS,
+                120, LocalDateTime.of(2020, Month.AUGUST, 20, 23, 50), epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask3);
+        fileBackedTasksManager.getSubtaskById(subtask3.getId());
+
+        Subtask subtask4 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
+                40, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 50), epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask4);
+        fileBackedTasksManager.getSubtaskById(subtask4.getId());
+
+        Subtask subtask5 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
+                120, LocalDateTime.of(2021, Month.AUGUST, 20, 20, 30), epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask5);
+        fileBackedTasksManager.getSubtaskById(subtask5.getId());
+
+        Subtask subtask6 = new Subtask("Подзадача[4]", "Описание[4]", Status.IN_PROGRESS, epic1.getId());
+        fileBackedTasksManager.addSubtask(subtask6);
+        fileBackedTasksManager.getSubtaskById(subtask6.getId());
+
     }
 
     private void save() {
@@ -167,11 +187,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         switch (type) {
             case TASK:
-                return new Task(id, type, name, status, description, duration, startTime, endTime);
+                return new Task(id, name, status, description, duration, startTime, endTime);
             case SUBTASK:
                 return new Subtask(
                         id,
-                        type,
                         name,
                         status,
                         description,
@@ -181,7 +200,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         Integer.parseInt(valueSplit[8])
                 );
         }
-        return new Epic(id, type, name, status, description, duration, startTime, endTime);
+        return new Epic(id, name, status, description, duration, startTime, endTime);
     }
 
     private static List<Integer> historyFromString(String value) {
