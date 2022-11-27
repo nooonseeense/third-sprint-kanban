@@ -45,9 +45,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubtask(Subtask subtask) {
         int epicId = subtask.getEpicId();
-        Epic epic = epics.get(epicId);
         int subtaskId = generator++;
         subtask.setId(subtaskId);
+        Epic epic = epics.get(epicId);
 
         if (epic == null || searchForTheIntersectionOfTask(subtask)) {
             return;
@@ -282,6 +282,15 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
+    }
+
+    @Override
+    public List<Task> getAllTasks() {
+        List<Task> allTasks = new LinkedList<>();
+        allTasks.addAll(getTasks());
+        allTasks.addAll(getEpics());
+        allTasks.addAll(getSubtask());
+        return allTasks;
     }
 
     @Override

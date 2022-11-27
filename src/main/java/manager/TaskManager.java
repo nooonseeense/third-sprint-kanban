@@ -54,5 +54,7 @@ interface TaskManager {
 
     void calculateStartAndEndTimeEpic(Epic epic);
 
+    List<Task> getAllTasks();
+
     List<Task> getHistory();
 }
