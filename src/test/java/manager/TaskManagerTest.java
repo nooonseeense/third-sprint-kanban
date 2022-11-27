@@ -331,7 +331,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addSubtask(subtask);
         List<Subtask> subtasks = new LinkedList<>();
         subtasks.add(subtask);
-        taskManager.calculateEpicDuration(epic, subtasks);
+        //taskManager.calculateEpicDuration(epic, subtasks);
         assertEquals(60, epic.getDuration(), "Неправильное время продолжительности эпика.");
 
         Subtask subtask2 = new Subtask(
@@ -344,7 +344,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         );
         taskManager.addSubtask(subtask2);
         subtasks.add(subtask2);
-        taskManager.calculateEpicDuration(epic, subtasks);
+        //taskManager.calculateEpicDuration(epic, subtasks);
         assertEquals(610, epic.getDuration(), "Неправильное время продолжительности эпика.");
     }
 
