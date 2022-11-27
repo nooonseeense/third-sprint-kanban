@@ -13,7 +13,7 @@ import java.time.Month;
 import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private static final String HEADER = "id,type,name,status,description,duration,startTime,endTime,epic";
+    public static final String HEADER = "id,type,name,status,description,duration,startTime,endTime,epic";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -160,7 +160,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private Task fromString(String value) {
+    protected Task fromString(String value) {
         String[] valueSplit = value.split(",");
 
         int id = Integer.parseInt(valueSplit[0]);
