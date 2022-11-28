@@ -118,7 +118,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addSubtask(subtask);
 
         subtask.setStatus(Status.DONE);
-        taskManager.updateSubtask(subtask);
+        taskManager.updateSubtasks(subtask);
 
         assertEquals(subtask.getStatus(), taskManager.getSubtask().get(0).getStatus());
         assertEquals(Status.DONE, taskManager.getEpics().get(0).getStatus());

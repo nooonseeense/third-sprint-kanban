@@ -11,7 +11,6 @@ public class Task implements Comparable<Task> {
     protected String description;
     protected int id;
     protected Status status;
-    protected TaskType taskType;
     protected int duration;
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
@@ -45,7 +44,6 @@ public class Task implements Comparable<Task> {
                 LocalDateTime endTime
     ) {
         this.id = id;
-        taskType = getTaskType();
         this.name = name;
         this.status = status;
         this.description = description;
@@ -53,7 +51,6 @@ public class Task implements Comparable<Task> {
         this.startTime = startTime;
         this.endTime = endTime;
     }
-
 
     public int getId() {
         return id;
@@ -122,15 +119,16 @@ public class Task implements Comparable<Task> {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id
-                && duration == task.duration && Objects.equals(name, task.name)
-                && Objects.equals(description, task.description) && status == task.status
-                && taskType == task.taskType && Objects.equals(startTime, task.startTime)
+                && duration == task.duration
+                && Objects.equals(name, task.name)
+                && Objects.equals(description, task.description)
+                && status == task.status && Objects.equals(startTime, task.startTime)
                 && Objects.equals(endTime, task.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, id, status, taskType, duration, startTime, endTime);
+        return Objects.hash(name, description, id, status, duration, startTime, endTime);
     }
 
     @Override

@@ -18,7 +18,7 @@ interface TaskManager {
 
     void updateEpic(Epic epic);
 
-    void updateSubtask(Subtask subtask);
+    void updateSubtasks(Subtask subtask);
 
     List<Epic> getEpics();
 

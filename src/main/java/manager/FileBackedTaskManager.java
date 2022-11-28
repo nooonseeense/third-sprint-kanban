@@ -25,44 +25,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         FileBackedTaskManager fileBackedTasksManager = FileBackedTaskManager.loadFromFile(new File(HOME));
 
-        Task task1 = new Task("Задача1", "Описание1", Status.NEW,
+        Task task1 = new Task("Задача", "Описание", Status.NEW,
                 60, LocalDateTime.of(2022, Month.NOVEMBER, 1, 15, 0));
         fileBackedTasksManager.addTask(task1);
         fileBackedTasksManager.getTaskById(task1.getId());
 
-        Epic epic1 = new Epic("Епик[1]", "Описание[Епик]");
-        fileBackedTasksManager.addEpic(epic1);
-        fileBackedTasksManager.getEpicById(epic1.getId());
+        Task task2 = new Task("Задача1", "Описание1", Status.NEW,
+                60, LocalDateTime.of(2022, Month.NOVEMBER, 1, 15, 55));
+        fileBackedTasksManager.addTask(task2);
+        fileBackedTasksManager.getTaskById(task2.getId());
 
-        Subtask subtask1 = new Subtask("Подзадача[1]", "Описание[2]", Status.IN_PROGRESS,
-                epic1.getId());
-        fileBackedTasksManager.addSubtask(subtask1);
-        fileBackedTasksManager.getSubtaskById(subtask1.getId());
-
-        Subtask subtask3 = new Subtask("Подзадача[3]", "Описание[3]", Status.IN_PROGRESS,
-                120, LocalDateTime.of(2020, Month.AUGUST, 20, 23, 50), epic1.getId());
-        fileBackedTasksManager.addSubtask(subtask3);
-        fileBackedTasksManager.getSubtaskById(subtask3.getId());
-
-        Subtask subtask4 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
-                40, LocalDateTime.of(2020, Month.AUGUST, 20, 20, 50), epic1.getId());
-        fileBackedTasksManager.addSubtask(subtask4);
-        fileBackedTasksManager.getSubtaskById(subtask4.getId());
-
-        Subtask subtask5 = new Subtask("Подзадача[2]", "Описание[2]", Status.IN_PROGRESS,
-                120, LocalDateTime.of(2021, Month.AUGUST, 20, 20, 30), epic1.getId());
-        fileBackedTasksManager.addSubtask(subtask5);
-        fileBackedTasksManager.getSubtaskById(subtask5.getId());
+        System.out.println(fileBackedTasksManager.getPrioritizedTasks());
     }
 
     private void save() {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, false))) {
             List<Task> sortedTasksById = new LinkedList<>();
 
             sortedTasksById.addAll(tasks.values());
             sortedTasksById.addAll(epics.values());
             sortedTasksById.addAll(subtasks.values());
-            sortedTasksById.sort(Comparator.comparingInt(Task::getId));
 
             bufferedWriter.write(HEADER + "\n");
             addTasksToFile(bufferedWriter, sortedTasksById);
@@ -98,39 +80,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
             Map<Integer, Task> tempStorageOfTasks = new HashMap<>();
 
-            fileBackedTaskManager.findTheLargeIdAmongAllTaskTypeAndSetGenerator();
+            bufferedReader.readLine();
 
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine();
 
-                if (line.contains(HEADER) || line.equals("")) {
+                if (line.isEmpty()) {
                     continue;
                 }
 
                 if (line.contains("TASK") || line.contains("EPIC") || line.contains("SUBTASK")) {
                     Task receivedTask = fileBackedTaskManager.fromString(line);
 
-                    if (receivedTask.getId() > fileBackedTaskManager.getGenerator()) {
-                        switch (receivedTask.getTaskType()) {
-                            case TASK:
-                                fileBackedTaskManager.tasks.put(receivedTask.getId(), receivedTask);
-                                fileBackedTaskManager.sortedListTasksAndSubtasks.add(receivedTask);
-                                tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
-                                break;
-                            case SUBTASK:
-                                fileBackedTaskManager.subtasks.put(receivedTask.getId(), (Subtask) receivedTask);
-                                fileBackedTaskManager.sortedListTasksAndSubtasks.add(receivedTask);
-                                fileBackedTaskManager.epics.get(((Subtask) receivedTask)
-                                                .getEpicId())
-                                        .setSubtaskIds(((Subtask) receivedTask)
-                                                .getEpicId());
-                                tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
-                                break;
-                            case EPIC:
-                                fileBackedTaskManager.epics.put(receivedTask.getId(), (Epic) receivedTask);
-                                tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
-                                break;
-                        }
+                    switch (receivedTask.getTaskType()) {
+                        case TASK:
+                            fileBackedTaskManager.tasks.put(receivedTask.getId(), receivedTask);
+                            fileBackedTaskManager.sortedListTasksAndSubtasks.add(receivedTask);
+                            tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
+                            break;
+                        case SUBTASK:
+                            fileBackedTaskManager.subtasks.put(receivedTask.getId(), (Subtask) receivedTask);
+                            fileBackedTaskManager.sortedListTasksAndSubtasks.add(receivedTask);
+                            fileBackedTaskManager.epics.get(((Subtask) receivedTask)
+                                    .getEpicId())
+                                    .setSubtaskIds(receivedTask.getId());
+                            tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
+                            break;
+                        case EPIC:
+                            fileBackedTaskManager.epics.put(receivedTask.getId(), (Epic) receivedTask);
+                            tempStorageOfTasks.put(receivedTask.getId(), receivedTask);
+                            break;
                     }
                 } else {
                     for (int historyId : historyFromString(line)) {
@@ -138,10 +117,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
+            fileBackedTaskManager.findTheLargeIdAmongAllTaskTypeAndSetGenerator();
+            return fileBackedTaskManager;
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
-        return new FileBackedTaskManager(file);
     }
 
     private void findTheLargeIdAmongAllTaskTypeAndSetGenerator() {
@@ -153,10 +133,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         sortedTasksById.sort(Comparator.comparingInt(Task::getId));
 
-        if (sortedTasksById.size() == 0) {
+        if (sortedTasksById.isEmpty()) {
             setGenerator(0);
         } else {
-            setGenerator(sortedTasksById.get(sortedTasksById.size() - 1).getId());
+            setGenerator(sortedTasksById.get(sortedTasksById.size() - 1).getId() + 1);
         }
     }
 
@@ -172,7 +152,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         LocalDateTime startTime;
         LocalDateTime endTime;
 
-        if (!(valueSplit[6].equals("null"))) {
+        if (!(valueSplit[6].equals("null") && valueSplit[7].equals("null"))) {
             startTime = LocalDateTime.parse(valueSplit[6]);
             endTime = LocalDateTime.parse(valueSplit[7]);
         } else {
@@ -266,8 +246,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        super.updateSubtask(subtask);
+    public void updateSubtasks(Subtask subtask) {
+        super.updateSubtasks(subtask);
         save();
     }
 
