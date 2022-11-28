@@ -1,6 +1,7 @@
 package manager;
 
 import constants.Status;
+import exceptions.SearchForTheIntersectionOfTaskException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -251,26 +252,12 @@ public class InMemoryTaskManager implements TaskManager {
             if (value.getStartTime() == null || value.getId() == task.getId()) {
                 continue;
             }
-            if (task.getStartTime().isAfter(value.getEndTime()) && task.getEndTime().isBefore(value.getStartTime())) {
+            if (!(task.getStartTime().isAfter(value.getEndTime())
+                    && task.getEndTime().isBefore(value.getStartTime()))) {
                 continue;
             } else {
-                return true;// добавить исключение
+                throw new SearchForTheIntersectionOfTaskException();
             }
-//            if (task.getStartTime().isBefore(value.getEndTime()) && task.getStartTime().isAfter(value.getStartTime())) {
-//                return true;
-//            }
-//            if (task.getEndTime().isBefore(value.getEndTime()) && task.getStartTime().isAfter(value.getStartTime())) {
-//                return true;
-//            }
-//            if (task.getStartTime().isBefore(value.getStartTime()) && task.getEndTime().isAfter(value.getStartTime())) {
-//                return true;
-//            }
-//            if (!task.getEndTime().isAfter(value.getStartTime())) {
-//                continue;
-//            }
-//            if (!task.getEndTime().isBefore(value.getStartTime())) {
-//                continue;
-//            }
         }
         return false;
     }
