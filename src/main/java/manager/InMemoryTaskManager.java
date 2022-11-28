@@ -253,8 +253,9 @@ public class InMemoryTaskManager implements TaskManager {
             }
             if (task.getStartTime().isAfter(value.getEndTime()) && task.getEndTime().isBefore(value.getStartTime())) {
                 continue;
+            } else {
+                return true;// добавить исключение
             }
-
 //            if (task.getStartTime().isBefore(value.getEndTime()) && task.getStartTime().isAfter(value.getStartTime())) {
 //                return true;
 //            }
@@ -271,7 +272,7 @@ public class InMemoryTaskManager implements TaskManager {
 //                continue;
 //            }
         }
-        return true;
+        return false;
     }
 
     @Override
