@@ -1,6 +1,7 @@
 package manager;
 
 import constants.Status;
+import exceptions.SearchForTheIntersectionOfTaskException;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Subtask;
@@ -66,7 +67,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addEpic(epic);
         taskManager.addSubtask(subtask);
 
-        final List<Subtask> subtasks = taskManager.getSubtask();
+        final List<Subtask> subtasks = taskManager.getSubtasks();
 
         assertNotNull(subtasks, "Subtasks do not return.");
         assertEquals(1, subtasks.size(), "Wrong amount subtasks.");
@@ -120,7 +121,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         subtask.setStatus(Status.DONE);
         taskManager.updateSubtasks(subtask);
 
-        assertEquals(subtask.getStatus(), taskManager.getSubtask().get(0).getStatus());
+        assertEquals(subtask.getStatus(), taskManager.getSubtasks().get(0).getStatus());
         assertEquals(Status.DONE, taskManager.getEpics().get(0).getStatus());
         assertEquals(subtask.getStartTime(), epic.getStartTime(), "Start time does not match");
         assertEquals(subtask.getEndTime(), epic.getEndTime(), "End time does not match");
@@ -168,10 +169,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 epic.getId()
         );
 
-        assertEquals(0, taskManager.getSubtask().size(), "The list is not empty");
+        assertEquals(0, taskManager.getSubtasks().size(), "The list is not empty");
 
         final IndexOutOfBoundsException indexOutOfBoundsException = assertThrows(IndexOutOfBoundsException.class,
-                () -> taskManager.getSubtask().get(subtask.getId()));
+                () -> taskManager.getSubtasks().get(subtask.getId()));
         assertEquals("Index 0 out of bounds for length 0", indexOutOfBoundsException.getMessage());
 
         final NullPointerException nullPointerException = assertThrows(NullPointerException.class,
@@ -215,11 +216,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addEpic(epic);
         taskManager.addSubtask(subtask);
 
-        assertEquals(1, taskManager.getSubtask().size(), "The subtasks has not been added");
+        assertEquals(1, taskManager.getSubtasks().size(), "The subtasks has not been added");
         assertEquals(subtask.getId(), epic.getSubtaskIds().get(0), "Subtask has no binding to epic");
 
         taskManager.epicAllDelete();
-        assertEquals(0, taskManager.getSubtask().size(), "List is not empty");
+        assertEquals(0, taskManager.getSubtasks().size(), "List is not empty");
     }
 
     @Test
@@ -289,7 +290,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.deleteSubTaskInIds(subtask.getId());
 
         assertEquals(Status.NEW, epic.getStatus(), "Epic status is wrong");
-        assertEquals(0, taskManager.getSubtask().size(), "Task has not been deleted");
+        assertEquals(0, taskManager.getSubtasks().size(), "Task has not been deleted");
         assertEquals(0, historyManager.getHistory().size(), "Task has not been deleted in history");
     }
 
@@ -341,8 +342,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.of(2021, Month.NOVEMBER, 14, 10, 0),
                 epic.getId()
         );
-        taskManager.addSubtask(subtask2);
-        assertEquals(610, epic.getDuration(), "Неправильное время продолжительности эпика.");
+        assertThrows(SearchForTheIntersectionOfTaskException.class, () -> taskManager.addSubtask(subtask2));
+        assertEquals(60, epic.getDuration(), "Неправильное время продолжительности эпика.");
     }
 
     @Test
@@ -366,10 +367,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         );
         taskManager.addEpic(epic);
         taskManager.addSubtask(subtask);
-        taskManager.addSubtask(subtask2);
 
+        assertThrows(SearchForTheIntersectionOfTaskException.class, () -> taskManager.addSubtask(subtask2));
         assertEquals(LocalDateTime.parse("2021-07-14T10:00"), epic.getStartTime());
-        assertEquals(LocalDateTime.parse("2021-07-14T11:50"), epic.getEndTime());
+        assertEquals(LocalDateTime.parse("2021-07-14T11:00"), epic.getEndTime());
 
         taskManager.subtaskAllDelete();
         taskManager.updateEpic(epic);
@@ -440,8 +441,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         );
         taskManager.addEpic(epic);
         taskManager.addSubtask(subtask);
-        taskManager.addSubtask(subtask2);
-        assertEquals(Status.IN_PROGRESS, epic.getStatus());
+        assertThrows(SearchForTheIntersectionOfTaskException.class, () -> taskManager.addSubtask(subtask2));
+        assertEquals(Status.NEW, epic.getStatus());
     }
 
     @Test

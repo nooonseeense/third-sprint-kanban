@@ -91,7 +91,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
                 "Task не был добавлен");
         assertEquals(loadFromFile.getEpics().size(), taskManager.getEpics().size(),
                 "Epic не был добавлен");
-        assertEquals(loadFromFile.getSubtask().size(), taskManager.getSubtask().size(),
+        assertEquals(loadFromFile.getSubtasks().size(), taskManager.getSubtasks().size(),
                 "Subtask не был добавлен");
         assertEquals(loadFromFile.getHistory().size(), taskManager.getHistory().size(),
                 "Неверное кол-во элементов в истории");
@@ -100,7 +100,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
                 "Задачи не совпадают");
         assertEquals(taskManager.getEpics(), loadFromFile.getEpics(),
                 "Епики не совпадают");
-        assertEquals(taskManager.getSubtask(), loadFromFile.getSubtask(),
+        assertEquals(taskManager.getSubtasks(), loadFromFile.getSubtasks(),
                 "Сабтаски не совпадают");
         assertEquals(loadFromFile.getGenerator(), taskManager.getGenerator(),
                 "ИД последней добавленной задачи не совпадает");

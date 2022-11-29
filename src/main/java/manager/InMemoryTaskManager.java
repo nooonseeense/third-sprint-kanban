@@ -107,7 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Subtask> getSubtask() {
+    public List<Subtask> getSubtasks() {
         Collection<Subtask> values = subtasks.values();
         return new ArrayList<>(values);
     }
@@ -252,12 +252,13 @@ public class InMemoryTaskManager implements TaskManager {
             if (value.getStartTime() == null || value.getId() == task.getId()) {
                 continue;
             }
-            if (!(task.getStartTime().isAfter(value.getEndTime())
-                    && task.getEndTime().isBefore(value.getStartTime()))) {
+            if (!task.getStartTime().isAfter(value.getEndTime())) {
                 continue;
-            } else {
-                throw new SearchForTheIntersectionOfTaskException();
             }
+            if (!task.getEndTime().isAfter(value.getStartTime())) {
+                continue;
+            }
+            throw new SearchForTheIntersectionOfTaskException();
         }
         return false;
     }
@@ -298,7 +299,7 @@ public class InMemoryTaskManager implements TaskManager {
         List<Task> allTasks = new LinkedList<>();
         allTasks.addAll(getTasks());
         allTasks.addAll(getEpics());
-        allTasks.addAll(getSubtask());
+        allTasks.addAll(getSubtasks());
         return allTasks;
     }
 

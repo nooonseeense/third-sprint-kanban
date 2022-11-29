@@ -24,7 +24,7 @@ interface TaskManager {
 
     List<Task> getTasks();
 
-    List<Subtask> getSubtask();
+    List<Subtask> getSubtasks();
 
     void taskAllDelete();
 

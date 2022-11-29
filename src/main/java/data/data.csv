@@ -1,0 +1,9 @@
+id,type,name,status,description,duration,startTime,endTime,epic
+0,TASK,Задача,NEW,Описание,60,2022-11-02T14:30,2022-11-02T15:30
+3,TASK,Задача,NEW,Описание,60,2022-11-01T15:00,2022-11-01T16:00
+4,TASK,Задача1,NEW,Описание1,60,2022-11-01T15:55,2022-11-01T16:55
+1,EPIC,Епик,IN_PROGRESS,Описание,0,null,null
+2,SUBTASK,Подзадача,IN_PROGRESS,Описание,0,null,null,1
+
+0,1,2,3,4
+
