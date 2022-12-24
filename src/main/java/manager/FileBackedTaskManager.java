@@ -34,8 +34,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 60, LocalDateTime.of(2022, Month.NOVEMBER, 1, 15, 55));
         fileBackedTasksManager.addTask(task2);
         fileBackedTasksManager.getTaskById(task2.getId());
-
-        System.out.println(fileBackedTasksManager.getPrioritizedTasks());
     }
 
     private void save() {

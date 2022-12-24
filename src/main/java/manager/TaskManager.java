@@ -7,7 +7,7 @@ import tasks.Task;
 import java.util.List;
 import java.util.Set;
 
-interface TaskManager {
+public interface TaskManager {
     void addTask(Task task);
 
     void addEpic(Epic epic);
