@@ -1,4 +1,4 @@
-package httpServer;
+package http_service;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -10,9 +10,6 @@ import java.util.Map;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-/**
- * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
- */
 public class KVServer {
     public static final int PORT = 8078;
     private final String apiToken;
@@ -28,7 +25,11 @@ public class KVServer {
     }
 
     private void load(HttpExchange h) {
-        // TODO Добавьте получение значения по ключу
+        // TODO Добавьте получение значения по ключу [LOAD - Значит, что-то забрать с сервера]
+        // 1. Распарсить запрос
+        // 2. Забрать ключ, который пришел в запросе
+        // 3. По этому ключу вытащить значение из data
+        // 4. Сделать response в формате json, то значение, которое хочет получить пользователь
     }
 
     private void save(HttpExchange h) throws IOException {
