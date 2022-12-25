@@ -14,10 +14,13 @@ import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     public static final String HEADER = "id,type,name,status,description,duration,startTime,endTime,epic";
-    private final File file;
+    private File file;
 
     public FileBackedTaskManager(File file) {
         this.file = file;
+    }
+
+    public FileBackedTaskManager() {
     }
 
     public static void main(String[] args) {
@@ -36,7 +39,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTasksManager.getTaskById(task2.getId());
     }
 
-    private void save() {
+    public void save() {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, false))) {
             List<Task> sortedTasksById = new LinkedList<>();
 
