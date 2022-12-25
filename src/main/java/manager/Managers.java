@@ -16,6 +16,7 @@ public class Managers {
     }
 
     public static TaskManager getDefaultTask() {
+        // TODO В конце обновите статический метод getDefault() в утилитарном классе Managers, чтобы он возвращал HttpTaskManager.
         return new InMemoryTaskManager();
     }
 
