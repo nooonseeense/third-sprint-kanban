@@ -8,6 +8,7 @@ import manager.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URI;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -29,73 +30,98 @@ public class HttpTaskServer {
     }
 
     private void handler(HttpExchange exchange) throws IOException { // TODO Сделать try catch + switch case
-        String path = exchange.getRequestURI().getPath();
+        URI uri = exchange.getRequestURI();
+        String path = uri.getPath();
+        String query = uri.getQuery();
         String method = exchange.getRequestMethod();
         String[] pathParts = path.split("/");
 
-        switch (method) {
-            case "GET":
-                if (pathParts[1].equals("tasks")) {
+        try {
+            switch (method) {
+                case "GET":
+                    if (pathParts[1].equals("tasks") && pathParts.length == 2) {
 
-                }
-                if (pathParts[1].equals("tasks") && pathParts[2].equals("task")) {
+                        break;
+                    }
+                    if (pathParts[1].equals("tasks")
+                            && pathParts[2].equals("task")
+                            && query == null
+                            && pathParts.length == 3) {
 
-                }
-                if (pathParts[2].equals("task") && pathParts[3].equals("?id=")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("task")) {
+                        assert query != null;
+                        if (query.equals("id") && pathParts.length == 3) {
 
-                }
-                if (pathParts[2].equals("subtask")) {
+                            break;
+                        }
+                    }
+                    if (pathParts[2].equals("subtask") && query == null) {
 
-                }
-                if (pathParts[2].equals("subtask") && pathParts[3].equals("?id=")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("subtask") && query.equals("id") && pathParts.length == 3) {
 
-                }
-                if (pathParts[2].equals("epic")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("subtask") && pathParts[3].equals("epic")) {
 
-                }
-                if (pathParts[2].equals("epic") && pathParts[3].equals("?id=")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("epic") && query == null) {
 
-                }
-                if (pathParts[2].equals("subtask") && pathParts[3].equals("epic")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("epic") && query.equals("id") && pathParts.length == 3) {
 
-                }
-                if (pathParts[2].equals("history")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("history")) {
 
-                }
-                break;
-            case "POST":
-                if (pathParts[2].equals("task")) {
+                        break;
+                    }
+                case "POST":
+                    if (pathParts[2].equals("task")) {
 
-                }
-                if (pathParts[2].equals("epic")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("epic")) {
 
-                }
-                if (pathParts[2].equals("subtask")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("subtask")) {
 
-                }
-                break;
-            case "DELETE":
-                if (pathParts[2].equals("task")) {
+                        break;
+                    }
+                case "DELETE":
+                    if (pathParts[2].equals("task") && query == null) {
 
-                }
-                if (pathParts[2].equals("epic")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("epic") && query == null) {
 
-                }
-                if (pathParts[2].equals("subtask")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("subtask") && query == null) {
 
-                }
-                if (pathParts[2].equals("task") && pathParts[3].equals("?id=")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("task") && query.equals("id")) {
 
-                }
-                if (pathParts[2].equals("epic") && pathParts[3].equals("?id=")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("epic") && query.equals("id")) {
 
-                }
-                if (pathParts[2].equals("subtask") && pathParts[3].equals("?id=")) {
+                        break;
+                    }
+                    if (pathParts[2].equals("subtask") && query.equals("id")) {
 
-                }
-                break;
-            default:
-                writeResponse(exchange, "Такого эндпоинта не существует", 404);
+                        break;
+                    }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            writeResponse(exchange, "Такого эндпоинта не существует", 404);
         }
     }
 
