@@ -20,8 +20,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public FileBackedTaskManager() {
-    }
+    public FileBackedTaskManager() {}
 
     public static void main(String[] args) {
         final String HOME = "src/main/java/data/data.csv";
