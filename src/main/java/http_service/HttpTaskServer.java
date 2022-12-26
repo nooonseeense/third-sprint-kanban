@@ -18,8 +18,7 @@ public class HttpTaskServer {
     private final TaskManager taskManager;
 
     public static void main(String[] args) throws IOException {
-        HttpTaskServer server = new HttpTaskServer();
-        server.start();
+        new HttpTaskServer().start();
     }
 
     public HttpTaskServer() throws IOException {
@@ -29,13 +28,80 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks", this::handler);
     }
 
-    private void handler(HttpExchange exchange) {
-        // TODO Сделать try catch + switch case
+    private void handler(HttpExchange exchange) throws IOException { // TODO Сделать try catch + switch case
+        String path = exchange.getRequestURI().getPath();
+        String method = exchange.getRequestMethod();
+        String[] pathParts = path.split("/");
+
+        switch (method) {
+            case "GET":
+                if (pathParts[1].equals("tasks")) {
+
+                }
+                if (pathParts[1].equals("tasks") && pathParts[2].equals("task")) {
+
+                }
+                if (pathParts[2].equals("task") && pathParts[3].equals("?id=")) {
+
+                }
+                if (pathParts[2].equals("subtask")) {
+
+                }
+                if (pathParts[2].equals("subtask") && pathParts[3].equals("?id=")) {
+
+                }
+                if (pathParts[2].equals("epic")) {
+
+                }
+                if (pathParts[2].equals("epic") && pathParts[3].equals("?id=")) {
+
+                }
+                if (pathParts[2].equals("subtask") && pathParts[3].equals("epic")) {
+
+                }
+                if (pathParts[2].equals("history")) {
+
+                }
+                break;
+            case "POST":
+                if (pathParts[2].equals("task")) {
+
+                }
+                if (pathParts[2].equals("epic")) {
+
+                }
+                if (pathParts[2].equals("subtask")) {
+
+                }
+                break;
+            case "DELETE":
+                if (pathParts[2].equals("task")) {
+
+                }
+                if (pathParts[2].equals("epic")) {
+
+                }
+                if (pathParts[2].equals("subtask")) {
+
+                }
+                if (pathParts[2].equals("task") && pathParts[3].equals("?id=")) {
+
+                }
+                if (pathParts[2].equals("epic") && pathParts[3].equals("?id=")) {
+
+                }
+                if (pathParts[2].equals("subtask") && pathParts[3].equals("?id=")) {
+
+                }
+                break;
+            default:
+                writeResponse(exchange, "Такого эндпоинта не существует", 404);
+        }
     }
 
     public void start() {
-        System.out.println("Started TaskServer: " + PORT);
-        System.out.println("http://localhost:" + PORT + "/tasks");
+        System.out.println("Started TaskServer in PORT: " + PORT);
+        System.out.println("http://localhost:" + PORT + "/tasks/");
         httpServer.start();
     }
 
@@ -48,10 +114,17 @@ public class HttpTaskServer {
         return new String(exchange.getRequestBody().readAllBytes(), UTF_8);
     }
 
-    protected void sendText(HttpExchange h, String text) throws IOException {
-        byte[] resp = text.getBytes(UTF_8);
-        h.getResponseHeaders().add("Content-Type", "application/json");
-        h.sendResponseHeaders(200, resp.length);
-        h.getResponseBody().write(resp);
+    private void writeResponse(HttpExchange exchange,
+                               String responseString,
+                               int responseCode) throws IOException {
+        if (responseString.isBlank()) {
+            exchange.sendResponseHeaders(responseCode, 0);
+        } else {
+            byte[] bytes = responseString.getBytes(UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(responseCode, bytes.length);
+            exchange.getResponseBody().write(bytes);
+        }
+        exchange.close();
     }
 }
