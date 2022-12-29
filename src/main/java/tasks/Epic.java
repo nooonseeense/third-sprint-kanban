@@ -1,8 +1,12 @@
 package tasks;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import constants.Status;
 import constants.TaskType;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,5 +69,11 @@ public class Epic extends Task {
                 + duration + ","
                 + startTime + ","
                 + endTime + "\n";
+    }
+
+    @Override
+    public Epic deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
+            throws JsonParseException {
+        return (Epic) super.deserialize(jsonElement, type, jsonDeserializationContext);
     }
 }

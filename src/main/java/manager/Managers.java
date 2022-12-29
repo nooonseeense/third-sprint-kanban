@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import http_service.HttpTaskManager;
 import service.LocalDateTimeAdapter;
-import service.TaskAdapter;
-import tasks.Task;
-
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 
@@ -19,7 +16,7 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static TaskManager getDefaultTask() throws MalformedURLException {
+    public static TaskManager getDefaultTask() throws IOException {
         return new HttpTaskManager(new URL("http://localhost"));
     }
 
@@ -28,7 +25,6 @@ public class Managers {
                 .setPrettyPrinting()
                 .serializeNulls()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .registerTypeAdapter(Task.class, new TaskAdapter())
                 .create();
     }
 }

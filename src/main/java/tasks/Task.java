@@ -1,12 +1,17 @@
 package tasks;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import constants.Status;
 import constants.TaskType;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task implements Comparable<Task> {
+public class Task implements Comparable<Task>, JsonDeserializer<Task> {
     protected String name;
     protected String description;
     protected int id;
@@ -141,5 +146,11 @@ public class Task implements Comparable<Task> {
                 + duration + ","
                 + startTime + ","
                 + endTime + "\n";
+    }
+
+    @Override
+    public Task deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
+            throws JsonParseException {
+        return jsonDeserializationContext.deserialize(jsonElement, Task.class);
     }
 }

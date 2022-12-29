@@ -19,6 +19,7 @@ public class HttpTaskServer {
 
     public static void main(String[] args) throws IOException{
         new HttpTaskServer().start();
+
     }
 
     public HttpTaskServer() throws IOException {
@@ -82,7 +83,7 @@ public class HttpTaskServer {
 
                         break;
                     }
-                case "POST":
+                case "POST": // Методы добавления задачи
                     if (pathParts[2].equals("task")) {
 
                         break;
