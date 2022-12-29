@@ -12,7 +12,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class KVTaskClient { // Этот класс будет использоваться HttpTaskManager
     private final URL url;
     private final HttpClient client;
-    private long apiToken;
+    private String apiToken;
 
     public KVTaskClient(URL url) {  // TODO Конструктор принимает URL к серверу хранилища и регистрируется. При регистрации выдаётся токен (API_TOKEN), который нужен при работе с сервером.
         this.url = url;
@@ -22,7 +22,7 @@ public class KVTaskClient { // Этот класс будет использов
         HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            apiToken = Long.parseLong(new String(response.body().getBytes(), UTF_8));
+            apiToken = new String(response.body().getBytes(), UTF_8);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
