@@ -3,11 +3,17 @@ package http_service;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import constants.Status;
 import manager.Managers;
 import manager.TaskManager;
+import tasks.Task;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.util.HashMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -17,9 +23,27 @@ public class HttpTaskServer {
     private final Gson gson;
     private final TaskManager taskManager;
 
-    public static void main(String[] args) throws IOException{
+
+    public static void main(String[] args) throws IOException {
         new HttpTaskServer().start();
 
+        HttpClient client = HttpClient.newHttpClient();
+        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
+        URL url = new URL("http://localhost:8080/tasks");
+        HashMap<String, Integer> test = new HashMap<>();
+        int testId = 25;
+        test.put(url.getFile(), testId);
+
+        System.out.println(test);
+
+//        URI url = URI.create("http://localhost:8080/tasks/task/");
+//
+//
+//        Gson gson = new Gson();
+//        String json = gson.toJson(task);
+//        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+//        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
+//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public HttpTaskServer() throws IOException {
@@ -34,6 +58,7 @@ public class HttpTaskServer {
         String path = uri.getPath();
         String query = uri.getQuery();
         String method = exchange.getRequestMethod();
+        String body = String.valueOf(exchange.getRequestBody());
         String[] pathParts = path.split("/");
 
         try {
@@ -85,6 +110,9 @@ public class HttpTaskServer {
                     }
                 case "POST": // Методы добавления задачи
                     if (pathParts[2].equals("task")) {
+                        if (query == null) {
+                            writeErrorResponse(exchange, 400);
+                        }
 
                         break;
                     }
@@ -123,7 +151,7 @@ public class HttpTaskServer {
                     }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            writeResponse(exchange, exchange.getRequestMethod(), 404);
+            writeErrorResponse(exchange, 404);
         }
     }
 
@@ -142,7 +170,9 @@ public class HttpTaskServer {
         return new String(exchange.getRequestBody().readAllBytes(), UTF_8);
     }
 
-    private void writeResponse(HttpExchange exchange, String response, int responseCode) {
+    private void writeErrorResponse(HttpExchange exchange, int responseCode) {
+        String response = "";
+
         try {
             if (response.isBlank()) {
                 exchange.sendResponseHeaders(responseCode, 0);
@@ -173,8 +203,22 @@ public class HttpTaskServer {
         }
     }
 
+    private void writeSuccessResponse(HttpExchange exchange, String response) {
+        byte[] resp = response.getBytes(UTF_8);
+
+        try {
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, resp.length);
+            exchange.getResponseBody().write(resp);
+        } catch (IOException e) {
+            writeErrorResponse(exchange, 500);
+        } finally {
+            exchange.close();
+        }
+    }
+
     private void handlerGetPrioritizedTasks(HttpExchange exchange) {
         String response = gson.toJson(taskManager.getPrioritizedTasks());
-        writeResponse(exchange, response, 200);
+        writeSuccessResponse(exchange, response);
     }
 }
