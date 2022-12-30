@@ -10,6 +10,7 @@ import tasks.Task;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -22,7 +23,6 @@ public class HttpTaskServer {
     private final HttpServer httpServer;
     private final Gson gson;
     private final TaskManager taskManager;
-
 
     public static void main(String[] args) throws IOException {
         new HttpTaskServer().start();
@@ -66,6 +66,8 @@ public class HttpTaskServer {
                 case "GET":
                     if (pathParts[1].equals("tasks") && pathParts.length == 2) {
                         if (exchange.getRequestBody() != null) {
+                            taskManager.setUrl(new URL("http://localhost/tasks"));
+                            taskManager.getPrioritizedTasks();
                             handlerGetPrioritizedTasks(exchange);
                         }
                         break;
@@ -150,7 +152,7 @@ public class HttpTaskServer {
                         break;
                     }
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException | MalformedURLException e) {
             writeErrorResponse(exchange, 404);
         }
     }

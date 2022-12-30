@@ -28,7 +28,7 @@ public class KVServer {
         server.createContext("/load", this::load);
     }
 
-    private void load(HttpExchange h) {
+    private void load(HttpExchange exchange) {
         // TODO Добавьте получение значения по ключу [LOAD - Значит, что-то забрать с сервера]
         // 1. Распарсить запрос
         // 2. Забрать ключ, который пришел в запросе

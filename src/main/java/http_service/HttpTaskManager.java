@@ -8,7 +8,7 @@ import manager.Managers;
 import java.net.URL;
 
 public class HttpTaskManager extends FileBackedTaskManager { // ТРЕТЬЯ СЕРИАЛИЗИАЦИЯ МЕТОД SAVE БУДЕТ ИСПОЛЬЗОВАТЬСЯ В FileBackedTaskManager от сюда вызывать его не нужно
-    private final URL url;
+    private URL url;
     private final KVTaskClient client;
     private final Gson gson;
 
@@ -21,7 +21,7 @@ public class HttpTaskManager extends FileBackedTaskManager { // ТРЕТЬЯ С�
     @Override
     public void save() {
         String key = url.getFile();
-
+        // TODO написать метод, который будет добавлять URN к URL
         try {
             switch (key) {
                 case "/tasks/task":
