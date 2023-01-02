@@ -1,20 +1,19 @@
 package http_service;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import constants.Status;
 import manager.Managers;
 import manager.TaskManager;
+import tasks.Epic;
+import tasks.Subtask;
 import tasks.Task;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -26,24 +25,6 @@ public class HttpTaskServer {
 
     public static void main(String[] args) throws IOException {
         new HttpTaskServer().start();
-
-        HttpClient client = HttpClient.newHttpClient();
-        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW);
-        URL url = new URL("http://localhost:8080/tasks");
-        HashMap<String, Integer> test = new HashMap<>();
-        int testId = 25;
-        test.put(url.getFile(), testId);
-
-        System.out.println(test);
-
-//        URI url = URI.create("http://localhost:8080/tasks/task/");
-//
-//
-//        Gson gson = new Gson();
-//        String json = gson.toJson(task);
-//        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
-//        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
-//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public HttpTaskServer() throws IOException {
@@ -53,22 +34,23 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks", this::handler);
     }
 
-    private void handler(HttpExchange exchange) {
-        URI uri = exchange.getRequestURI();
-        String path = uri.getPath();
-        String query = uri.getQuery();
-        String method = exchange.getRequestMethod();
-        String body = String.valueOf(exchange.getRequestBody());
-        String[] pathParts = path.split("/");
-
+    private void handler(HttpExchange exchange) throws IOException {
         try {
+            URI uri = exchange.getRequestURI();
+            String path = uri.getPath();
+            String query = uri.getQuery();
+            String method = exchange.getRequestMethod();
+            String body = readText(exchange);
+            String[] pathParts = path.split("/");
+            String response;
+            String idInString;
+
             switch (method) {
                 case "GET":
                     if (pathParts[1].equals("tasks") && pathParts.length == 2) {
                         if (exchange.getRequestBody() != null) {
-                            taskManager.setUrl(new URL("http://localhost/tasks"));
-                            taskManager.getPrioritizedTasks();
-                            handlerGetPrioritizedTasks(exchange);
+                            response = String.valueOf(taskManager.getPrioritizedTasks());
+                            sendText(exchange, response, 200);
                         }
                         break;
                     }
@@ -76,54 +58,71 @@ public class HttpTaskServer {
                             && pathParts[2].equals("task")
                             && query == null
                             && pathParts.length == 3) {
-
+                        response = gson.toJson(taskManager.getTasks());
+                        sendText(exchange, response, 200);
                         break;
                     }
                     if (pathParts[2].equals("task")) {
                         assert query != null;
                         if (query.equals("id") && pathParts.length == 3) {
-
+                            idInString = query.replaceFirst("^id=", "");
+                            response = gson.toJson(taskManager.getTaskById(parseTaskId(idInString)));
+                            sendText(exchange, response, 200);
                             break;
                         }
                     }
                     if (pathParts[2].equals("subtask") && query == null) {
-
+                        response = gson.toJson(taskManager.getSubtasks());
+                        sendText(exchange, response, 200);
                         break;
                     }
                     if (pathParts[2].equals("subtask") && query.equals("id") && pathParts.length == 3) {
-
+                        idInString = query.replaceFirst("^id=", "");
+                        response = gson.toJson(taskManager.getSubtaskById(parseTaskId(idInString)));
+                        sendText(exchange, response, 200);
                         break;
                     }
                     if (pathParts[2].equals("subtask") && pathParts[3].equals("epic")) {
-
+                        idInString = query.replaceFirst("^id=", "");
+                        response = String.valueOf(taskManager.getEpicSubtasksList(parseTaskId(idInString)));
+                        sendText(exchange, response, 200);
                         break;
                     }
                     if (pathParts[2].equals("epic") && query == null) {
-
+                        response = gson.toJson(taskManager.getEpics());
+                        sendText(exchange, response, 200);
                         break;
                     }
                     if (pathParts[2].equals("epic") && query.equals("id") && pathParts.length == 3) {
-
+                        idInString = query.replaceFirst("^id=", "");
+                        response = gson.toJson(taskManager.getEpicById(parseTaskId(idInString)));
+                        sendText(exchange, response, 200);
                         break;
                     }
                     if (pathParts[2].equals("history")) {
-
+                        response = String.valueOf(taskManager.getHistory());
+                        sendText(exchange, response, 200);
                         break;
                     }
-                case "POST": // Методы добавления задачи
+                case "POST": // Методы добавления задачи И ДОБАВИТЬ МЕТОДЫ ОБНОВЛЕНИЯ ЗАДАЧИ
                     if (pathParts[2].equals("task")) {
-                        if (query == null) {
-                            writeErrorResponse(exchange, 400);
-                        }
-
+                        Task task = gson.fromJson(body, Task.class);
+                        taskManager.addTask(task);
+                        sendText(exchange, "В результате успешного выполнения запроса задача была добавлена.", 201);
                         break;
                     }
+
                     if (pathParts[2].equals("epic")) {
-
+                        Epic epic = gson.fromJson(body, Epic.class);
+                        taskManager.addEpic(epic);
+                        sendText(exchange, "В результате успешного выполнения запроса эпик был добавлен.", 201);
                         break;
                     }
-                    if (pathParts[2].equals("subtask")) {
 
+                    if (pathParts[2].equals("subtask")) {
+                        Subtask subtask = gson.fromJson(body, Subtask.class);
+                        taskManager.addSubtask(subtask);
+                        sendText(exchange, "В результате успешного выполнения запроса подзадача была добавлена.", 201);
                         break;
                     }
                 case "DELETE":
@@ -152,8 +151,12 @@ public class HttpTaskServer {
                         break;
                     }
             }
-        } catch (ArrayIndexOutOfBoundsException | MalformedURLException e) {
-            writeErrorResponse(exchange, 404);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            sendText(exchange,"По указанному адресу нет ресурса. Проверьте URL-адрес ресурса и повторите запрос.",404);
+        } catch (JsonParseException e) {
+            sendText(exchange,"При обработке JSON произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.",400);
+        } catch (IOException e) {
+            sendText(exchange,"На стороне сервера произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 500);
         }
     }
 
@@ -172,55 +175,18 @@ public class HttpTaskServer {
         return new String(exchange.getRequestBody().readAllBytes(), UTF_8);
     }
 
-    private void writeErrorResponse(HttpExchange exchange, int responseCode) {
-        String response = "";
-
-        try {
-            if (response.isBlank()) {
-                exchange.sendResponseHeaders(responseCode, 0);
-            } else {
-                switch (responseCode) {
-                    case 400:
-                        response = "В запросе содержится ошибка. Проверьте параметры и повторите запрос.";
-                        break;
-                    case 404:
-                        response = "По указанному адресу нет ресурса. Проверьте URL-адрес ресурса и повторите запрос.";
-                        break;
-                    case 422:
-                        response = "Команды, содержащиеся в запросе не могут быть выполнены.";
-                        break;
-                    case 500:
-                        response = "На стороне сервера произошла непредвиденная ошибка.";
-                        break;
-                }
-                exchange.getResponseHeaders().add("Content-Type", "application/json");
-                byte[] bytes = response.getBytes(UTF_8);
-                exchange.sendResponseHeaders(responseCode, bytes.length);
-                exchange.getResponseBody().write(bytes);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            exchange.close();
-        }
+    private void sendText(HttpExchange httpExchange, String text, int code) throws IOException {
+        byte[] textInByte = text.getBytes(StandardCharsets.UTF_8);
+        httpExchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        httpExchange.sendResponseHeaders(code, textInByte.length);
+        httpExchange.getResponseBody().write(textInByte);
     }
 
-    private void writeSuccessResponse(HttpExchange exchange, String response) {
-        byte[] resp = response.getBytes(UTF_8);
-
+    private int parseTaskId(String idInPath) {
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json");
-            exchange.sendResponseHeaders(200, resp.length);
-            exchange.getResponseBody().write(resp);
-        } catch (IOException e) {
-            writeErrorResponse(exchange, 500);
-        } finally {
-            exchange.close();
+            return Integer.parseInt(idInPath);
+        } catch (NumberFormatException e) {
+            return -1;
         }
-    }
-
-    private void handlerGetPrioritizedTasks(HttpExchange exchange) {
-        String response = gson.toJson(taskManager.getPrioritizedTasks());
-        writeSuccessResponse(exchange, response);
     }
 }

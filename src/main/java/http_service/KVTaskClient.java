@@ -29,7 +29,7 @@ public class KVTaskClient {
     }
 
     public void put(String key, String json) {
-        URI uri = URI.create(url + ":" + KVServer.PORT + "/save" + key + "/?API_TOKEN=" + apiToken);
+        URI uri = URI.create(url + ":" + KVServer.PORT + "/save/" + key + "/?API_TOKEN=" + apiToken);
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .uri(uri)
@@ -44,7 +44,7 @@ public class KVTaskClient {
     }
 
     public String load(String key) throws IOException, InterruptedException {
-        URI uri = URI.create(url + ":" + KVServer.PORT + "/load" + key + "/?API_TOKEN=" + apiToken);
+        URI uri = URI.create(url + ":" + KVServer.PORT + "/load/" + key + "/?API_TOKEN=" + apiToken);
         HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
         return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
     }
