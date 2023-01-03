@@ -43,7 +43,6 @@ public class KVServer {
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
-
                 if (data.containsKey(key)) {
                     System.out.println("Значение для ключа " + key + " успешно отправлено!");
                     sendText(h, data.get(key));
@@ -76,7 +75,6 @@ public class KVServer {
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
-
                 String value = readText(h);
 
                 if (value.isEmpty()) {
@@ -84,7 +82,6 @@ public class KVServer {
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
-
                 data.put(key, value);
                 System.out.println("Значение для ключа " + key + " успешно обновлено!");
                 h.sendResponseHeaders(200, 0);
