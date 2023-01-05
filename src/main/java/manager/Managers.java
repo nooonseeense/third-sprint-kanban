@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import http_service.HttpTaskManager;
 import service.LocalDateTimeAdapter;
 import service.TaskAdapter;
+import tasks.Task;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,7 +28,7 @@ public class Managers {
                 .setPrettyPrinting()
                 .serializeNulls()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .registerTypeAdapter(TaskAdapter.class, new TaskAdapter())
+                .registerTypeAdapter(Task.class, new TaskAdapter())
                 .create();
     }
 }

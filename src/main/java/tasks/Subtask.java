@@ -1,13 +1,8 @@
 package tasks;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import constants.Status;
 import constants.TaskType;
 
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -78,11 +73,5 @@ public class Subtask extends Task {
                 + startTime + ","
                 + endTime + ","
                 + epicId + "\n";
-    }
-
-    @Override
-    public Subtask deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
-            throws JsonParseException {
-        return (Subtask) super.deserialize(jsonElement, type, jsonDeserializationContext);
     }
 }

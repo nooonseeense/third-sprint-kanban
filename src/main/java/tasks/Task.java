@@ -1,17 +1,13 @@
 package tasks;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+
 import constants.Status;
 import constants.TaskType;
 
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task implements Comparable<Task>, JsonDeserializer<Task> {
+public class Task implements Comparable<Task> {
     protected String name;
     protected String description;
     protected int id;
@@ -19,13 +15,15 @@ public class Task implements Comparable<Task>, JsonDeserializer<Task> {
     protected int duration;
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
-    // Базовый конструктор
+
+    /**
+     * Базовый конструктор для создания задачи
+     */
     public Task(String name,
                 String description,
                 Status status,
                 int duration,
-                LocalDateTime startTime
-    ) {
+                LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -33,21 +31,26 @@ public class Task implements Comparable<Task>, JsonDeserializer<Task> {
         this.startTime = startTime;
         endTime = getEndTime();
     }
-    // Конструктор для создания Epic
+
+    /**
+     * Базовый конструктор для создания Epic
+     */
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
-    // Конструктор для метода public Task fromString(String value)
+
+    /**
+     * Конструктор для метода public Task fromString(String value)
+     */
     public Task(int id,
                 String name,
                 Status status,
                 String description,
                 int duration,
                 LocalDateTime startTime,
-                LocalDateTime endTime
-    ) {
+                LocalDateTime endTime) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -146,11 +149,5 @@ public class Task implements Comparable<Task>, JsonDeserializer<Task> {
                 + duration + ","
                 + startTime + ","
                 + endTime + "\n";
-    }
-
-    @Override
-    public Task deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
-            throws JsonParseException {
-        return jsonDeserializationContext.deserialize(jsonElement, Task.class);
     }
 }

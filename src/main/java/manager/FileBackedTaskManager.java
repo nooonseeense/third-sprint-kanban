@@ -140,7 +140,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    protected Task fromString(String value) {
+    public Task fromString(String value) {
         String[] valueSplit = value.split(",");
 
         int id = Integer.parseInt(valueSplit[0]);
