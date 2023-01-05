@@ -68,29 +68,29 @@ public class HttpTaskManager extends FileBackedTaskManager {
 
         try {
             HashMap<Integer, Task> tasksFromKVServer = gson.fromJson(client.load(TASKS_KEY), hashMapType);
-            if (!tasksFromKVServer.isEmpty()) {
+            if (tasksFromKVServer != null && !tasksFromKVServer.isEmpty()) {
                 tasks.putAll(tasksFromKVServer);
             }
 
             HashMap<Integer, Epic> epicsFromKVServer = gson.fromJson(client.load(EPICS_KEY), hashMapType);
-            if (!epicsFromKVServer.isEmpty()) {
+            if (epicsFromKVServer != null && !epicsFromKVServer.isEmpty()) {
                 epics.putAll(epicsFromKVServer);
             }
 
             HashMap<Integer, Subtask> subtasksFromKVServer = gson.fromJson(client.load(SUBTASKS_KEY), hashMapType);
-            if (!subtasksFromKVServer.isEmpty()) {
+            if (subtasksFromKVServer != null && !subtasksFromKVServer.isEmpty()) {
                 subtasks.putAll(subtasksFromKVServer);
             }
 
             List<Task> historyFromKVServer = gson.fromJson(client.load(HISTORY_KEY), listType);
-            if (!historyFromKVServer.isEmpty()) {
+            if (historyFromKVServer != null && !historyFromKVServer.isEmpty()) {
                 for (Task task : historyFromKVServer) {
                     historyManager.add(task);
                 }
             }
 
             List<Task> prioritizedTasksFromKVServer = gson.fromJson(client.load(PRIORITIZED_TASKS_KEY), listType);
-            if (!prioritizedTasksFromKVServer.isEmpty()) {
+            if (prioritizedTasksFromKVServer != null && !prioritizedTasksFromKVServer.isEmpty()) {
                 sortedListTasksAndSubtasks.addAll(prioritizedTasksFromKVServer);
             }
 
