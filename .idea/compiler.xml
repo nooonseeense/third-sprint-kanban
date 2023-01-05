@@ -15,7 +15,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="java-kanban" options="--add-exports java.base/jdk.internal.util.xml=ALL-UNNAMED" />
+      <module name="java-kanban" options="" />
     </option>
   </component>
 </project>

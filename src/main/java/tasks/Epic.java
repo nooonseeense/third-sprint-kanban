@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private final List<Integer> subtaskIds = new LinkedList<>();
+    private List<Integer> subtaskIds;
 
     public Epic(String name,
                 String description
     ) {
         super(name, description, Status.NEW);
+        subtaskIds = new LinkedList<>();
     }
 
     // Конструктор для метода public Task fromString(String value)

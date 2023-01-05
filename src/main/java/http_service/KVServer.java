@@ -32,26 +32,26 @@ public class KVServer {
         try {
             System.out.println("\n/load");
             if (!hasAuth(h)) {
-                System.out.println("Запрос не авторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
+                System.out.println("<SYSTEM>: Запрос не авторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
                 h.sendResponseHeaders(403, 0);
             }
             if ("GET".equals(h.getRequestMethod())) {
                 String key = h.getRequestURI().getPath().substring("/load/".length());
 
                 if (key.isEmpty()) {
-                    System.out.println("Key для получения пустой. Key указывается по пути: /load/{key}");
+                    System.out.println("<SYSTEM>: Key для получения пустой. Key указывается по пути: /load/{key}");
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
                 if (data.containsKey(key)) {
-                    System.out.println("Значение для ключа " + key + " успешно отправлено!");
+                    System.out.println("<SYSTEM>: Значение для ключа " + key + " успешно отправлено!");
                     sendText(h, data.get(key));
                 } else {
-                    System.out.println("Значение для ключа " + key + " отсутствует!");
+                    System.out.println("<SYSTEM>: Значение для ключа " + key + " отсутствует!");
                     h.sendResponseHeaders(400, 0);
                 }
             } else {
-                System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
+                System.out.println("<SYSTEM>: /load ждёт GET-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
         } finally {
@@ -63,7 +63,7 @@ public class KVServer {
         try {
             System.out.println("\n/save");
             if (!hasAuth(h)) {
-                System.out.println("Запрос не авторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
+                System.out.println("<SYSTEM>: Запрос не авторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
                 h.sendResponseHeaders(403, 0);
                 return;
             }
@@ -71,22 +71,22 @@ public class KVServer {
                 String key = h.getRequestURI().getPath().substring("/save/".length());
 
                 if (key.isEmpty()) {
-                    System.out.println("Key для сохранения пустой. Key указывается в пути: /save/{key}");
+                    System.out.println("<SYSTEM>: Key для сохранения пустой. Key указывается в пути: /save/{key}");
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
                 String value = readText(h);
 
                 if (value.isEmpty()) {
-                    System.out.println("Value для сохранения пустой. value указывается в теле запроса");
+                    System.out.println("<SYSTEM>: Value для сохранения пустой. value указывается в теле запроса");
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
                 data.put(key, value);
-                System.out.println("Значение для ключа " + key + " успешно обновлено!");
+                System.out.println("<SYSTEM>: Значение для ключа " + key + " успешно обновлено!");
                 h.sendResponseHeaders(200, 0);
             } else {
-                System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
+                System.out.println("<SYSTEM>: /save ждёт POST-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
         } finally {
@@ -100,7 +100,7 @@ public class KVServer {
             if ("GET".equals(h.getRequestMethod())) {
                 sendText(h, apiToken);
             } else {
-                System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
+                System.out.println("<SYSTEM>:/register ждёт GET-запрос, а получил " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
         } finally {
@@ -109,9 +109,9 @@ public class KVServer {
     }
 
     public void start() {
-        System.out.println("Started KVServer in PORT: " + PORT);
-        System.out.println("http://localhost:" + PORT + "/");
-        System.out.println("API_TOKEN: " + apiToken);
+        System.out.println("<SYSTEM>: Started KVServer in PORT: " + PORT);
+        System.out.println("<SYSTEM>: http://localhost:" + PORT + "/");
+        System.out.println("<SYSTEM>: API_TOKEN: " + apiToken);
         server.start();
     }
 

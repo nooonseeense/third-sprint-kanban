@@ -17,12 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTaskManager {
-    private static final String TASKS_KEY = "TASKS";
-    private static final String EPICS_KEY = "EPICS";
-    private static final String SUBTASKS_KEY = "SUBTASKS";
-    private static final String HISTORY_KEY = "HISTORY";
-    private static final String PRIORITIZED_TASKS_KEY = "PRIORITIZED_TASKS";
-    private static final String LAST_TASK_ID_KEY = "LAST_TASK_ID";
+    private static final String TASKS_KEY = "tasks";
+    private static final String EPICS_KEY = "epics";
+    private static final String SUBTASKS_KEY = "subtasks";
+    private static final String HISTORY_KEY = "history";
+    private static final String PRIORITIZED_TASKS_KEY = "prioritizedTasks";
+    private static final String LAST_TASK_ID_KEY = "lastTaskId";
 
     private final KVTaskClient client;
     private final Gson gson;
@@ -50,10 +50,10 @@ public class HttpTaskManager extends FileBackedTaskManager {
             String history = gson.toJson(super.getHistory());
             client.put(HISTORY_KEY, history);
 
-            String prioritizedTasks = gson.toJson(super.getPrioritizedTasks());
+            String prioritizedTasks = gson.toJson(getPrioritizedTasks());
             client.put(PRIORITIZED_TASKS_KEY, prioritizedTasks);
 
-            String lastTaskId = gson.toJson(getGenerator());
+            String lastTaskId = String.valueOf(getGenerator());
             client.put(LAST_TASK_ID_KEY, lastTaskId);
         } catch (JsonParseException e) {
             e.printStackTrace();
