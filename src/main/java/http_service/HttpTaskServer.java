@@ -1,9 +1,10 @@
 package http_service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import constants.Status;
+import constants.TaskType;
 import manager.Managers;
 import manager.TaskManager;
 import tasks.Epic;
@@ -58,7 +59,7 @@ public class HttpTaskServer {
                             && pathParts[2].equals("task")
                             && query == null
                             && pathParts.length == 3) {
-                        response = gson.toJson(taskManager.getTasks());
+                        response = gson.toJson(taskManager.getTasks()); // tyt
                         sendText(exchange, response, 200);
                         break;
                     }
@@ -104,59 +105,66 @@ public class HttpTaskServer {
                         sendText(exchange, response, 200);
                         break;
                     }
-                case "POST": // Методы добавления задачи И ДОБАВИТЬ МЕТОДЫ ОБНОВЛЕНИЯ ЗАДАЧИ
+                case "POST":
                     if (pathParts[2].equals("task")) {
                         Task task = gson.fromJson(body, Task.class);
                         taskManager.addTask(task);
-                        sendText(exchange, "В результате успешного выполнения запроса задача была добавлена.", 201);
+                        sendText(exchange, "Задача успешно добавлена.", 201);
                         break;
                     }
-
                     if (pathParts[2].equals("epic")) {
                         Epic epic = gson.fromJson(body, Epic.class);
                         taskManager.addEpic(epic);
-                        sendText(exchange, "В результате успешного выполнения запроса эпик был добавлен.", 201);
+                        sendText(exchange, "Эпик успешно добавлен.", 201);
                         break;
                     }
-
                     if (pathParts[2].equals("subtask")) {
                         Subtask subtask = gson.fromJson(body, Subtask.class);
                         taskManager.addSubtask(subtask);
-                        sendText(exchange, "В результате успешного выполнения запроса подзадача была добавлена.", 201);
+                        sendText(exchange, "Подзадача успешно добавлена.", 201);
                         break;
                     }
                 case "DELETE":
                     if (pathParts[2].equals("task") && query == null) {
-
+                        taskManager.taskAllDelete();
+                        sendText(exchange, "Задачи успешно удалены.", 202);
                         break;
                     }
                     if (pathParts[2].equals("epic") && query == null) {
-
+                        taskManager.epicAllDelete();
+                        sendText(exchange, "Епики успешно удалены.", 202);
                         break;
                     }
                     if (pathParts[2].equals("subtask") && query == null) {
-
+                        taskManager.subtaskAllDelete();
+                        sendText(exchange, "Подзадачи успешно удалены.", 202);
                         break;
                     }
                     if (pathParts[2].equals("task") && query.equals("id")) {
-
+                        idInString = query.replaceFirst("^id=", "");
+                        taskManager.deleteTaskInIds(Integer.parseInt(idInString));
+                        sendText(exchange, "Задача с ID " + idInString + " успешно удалена.", 202);
                         break;
                     }
                     if (pathParts[2].equals("epic") && query.equals("id")) {
-
+                        idInString = query.replaceFirst("^id=", "");
+                        taskManager.deleteEpicInIds(Integer.parseInt(idInString));
+                        sendText(exchange, "Епик с ID " + idInString + " успешно удален.", 202);
                         break;
                     }
                     if (pathParts[2].equals("subtask") && query.equals("id")) {
-
+                        idInString = query.replaceFirst("^id=", "");
+                        taskManager.deleteSubTaskInIds(Integer.parseInt(idInString));
+                        sendText(exchange, "Подзадача с ID " + idInString + " успешно удалена.", 202);
                         break;
                     }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            sendText(exchange,"По указанному адресу нет ресурса. Проверьте URL-адрес ресурса и повторите запрос.",404);
+            sendText(exchange, "По указанному адресу нет ресурса. Проверьте URL-адрес ресурса и повторите запрос.", 404);
         } catch (JsonParseException e) {
-            sendText(exchange,"При обработке JSON произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.",400);
+            sendText(exchange, "При обработке JSON произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 400);
         } catch (IOException e) {
-            sendText(exchange,"На стороне сервера произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 500);
+            sendText(exchange, "На стороне сервера произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 500);
         }
     }
 
