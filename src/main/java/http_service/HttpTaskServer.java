@@ -3,8 +3,6 @@ package http_service;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import constants.Status;
-import constants.TaskType;
 import manager.Managers;
 import manager.TaskManager;
 import tasks.Epic;
@@ -23,6 +21,11 @@ public class HttpTaskServer {
     private final HttpServer httpServer;
     private final Gson gson;
     private final TaskManager taskManager;
+    private static final String TASK_REQUEST = "task";
+    private static final String TASKS_REQUEST = "tasks";
+    private static final String EPIC_REQUEST = "epic";
+    private static final String SUBTASK_REQUEST = "subtask";
+    private static final String HISTORY_REQUEST = "history";
 
     public static void main(String[] args) throws IOException {
         new HttpTaskServer().start();
@@ -32,139 +35,133 @@ public class HttpTaskServer {
         taskManager = Managers.getDefaultTask();
         gson = Managers.getGson();
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-        httpServer.createContext("/tasks", this::handler);
+        httpServer.createContext(TASKS_REQUEST, this::handler);
     }
 
-    private void handler(HttpExchange exchange) throws IOException {
-        try {
-            URI uri = exchange.getRequestURI();
-            String path = uri.getPath();
-            String query = uri.getQuery();
-            String method = exchange.getRequestMethod();
-            String body = readText(exchange);
-            String[] pathParts = path.split("/");
-            String response;
-            String idInString;
+    private void handler(HttpExchange h) throws IOException {
+        URI uri = h.getRequestURI();
+        String path = uri.getPath();
+        String query = uri.getQuery();
+        String method = h.getRequestMethod();
+        String body = readText(h);
+        String[] pathParts = path.split("/");
+        String response;
+        int taskId = 0;
 
+        if (query != null) {
+            taskId = Integer.parseInt(query.replaceFirst("^id=", ""));
+        }
+
+        try {
             switch (method) {
                 case "GET":
-                    if (pathParts[1].equals("tasks") && pathParts.length == 2) {
-                        if (exchange.getRequestBody() != null) {
+                    if (pathParts[1].equals(TASKS_REQUEST) && pathParts.length == 2) {
+                        if (h.getRequestBody() != null) {
                             response = String.valueOf(taskManager.getPrioritizedTasks());
-                            sendText(exchange, response, 200);
+                            sendText(h, response, 200);
                         }
                         break;
                     }
-                    if (pathParts[1].equals("tasks")
-                            && pathParts[2].equals("task")
-                            && query == null
-                            && pathParts.length == 3) {
-                        response = gson.toJson(taskManager.getTasks()); // tyt
-                        sendText(exchange, response, 200);
+                    if (pathParts[1].equals(TASKS_REQUEST) && pathParts[2].equals(TASK_REQUEST) && query == null) {
+                        response = gson.toJson(taskManager.getTasks());
+                        sendText(h, response, 200);
                         break;
                     }
-                    if (pathParts[2].equals("task")) {
-                        assert query != null;
-                        if (query.equals("id") && pathParts.length == 3) {
-                            idInString = query.replaceFirst("^id=", "");
-                            response = gson.toJson(taskManager.getTaskById(parseTaskId(idInString)));
-                            sendText(exchange, response, 200);
-                            break;
-                        }
+                    if (pathParts[2].equals(TASK_REQUEST)) {
+                        response = gson.toJson(taskManager.getTaskById(taskId));
+                        sendText(h, response, 200);
+                        break;
                     }
-                    if (pathParts[2].equals("subtask") && query == null) {
+                    if (pathParts[2].equals(SUBTASK_REQUEST) && pathParts[3].equals(EPIC_REQUEST)) {
+                        response = String.valueOf(taskManager.getEpicSubtasksList(taskId));
+                        sendText(h, response, 200);
+                        break;
+                    }
+                    if (pathParts[2].equals(SUBTASK_REQUEST) && query == null) {
                         response = gson.toJson(taskManager.getSubtasks());
-                        sendText(exchange, response, 200);
+                        sendText(h, response, 200);
                         break;
                     }
-                    if (pathParts[2].equals("subtask") && query.equals("id") && pathParts.length == 3) {
-                        idInString = query.replaceFirst("^id=", "");
-                        response = gson.toJson(taskManager.getSubtaskById(parseTaskId(idInString)));
-                        sendText(exchange, response, 200);
+                    if (pathParts[2].equals(SUBTASK_REQUEST)) {
+                        response = gson.toJson(taskManager.getSubtaskById(taskId));
+                        sendText(h, response, 200);
                         break;
                     }
-                    if (pathParts[2].equals("subtask") && pathParts[3].equals("epic")) {
-                        idInString = query.replaceFirst("^id=", "");
-                        response = String.valueOf(taskManager.getEpicSubtasksList(parseTaskId(idInString)));
-                        sendText(exchange, response, 200);
-                        break;
-                    }
-                    if (pathParts[2].equals("epic") && query == null) {
+                    if (pathParts[2].equals(EPIC_REQUEST) && query == null) {
                         response = gson.toJson(taskManager.getEpics());
-                        sendText(exchange, response, 200);
+                        sendText(h, response, 200);
                         break;
                     }
-                    if (pathParts[2].equals("epic") && query.equals("id") && pathParts.length == 3) {
-                        idInString = query.replaceFirst("^id=", "");
-                        response = gson.toJson(taskManager.getEpicById(parseTaskId(idInString)));
-                        sendText(exchange, response, 200);
+                    if (pathParts[2].equals(EPIC_REQUEST)) {
+                        response = gson.toJson(taskManager.getEpicById(taskId));
+                        sendText(h, response, 200);
                         break;
                     }
-                    if (pathParts[2].equals("history")) {
+                    if (pathParts[2].equals(HISTORY_REQUEST)) {
                         response = String.valueOf(taskManager.getHistory());
-                        sendText(exchange, response, 200);
+                        sendText(h, response, 200);
                         break;
                     }
+                    break;
                 case "POST":
-                    if (pathParts[2].equals("task")) {
+                    if (pathParts[2].equals(TASK_REQUEST)) {
                         Task task = gson.fromJson(body, Task.class);
                         taskManager.addTask(task);
-                        sendText(exchange, "Задача успешно добавлена.", 201);
+                        sendText(h, "Задача успешно добавлена.", 201);
                         break;
                     }
-                    if (pathParts[2].equals("epic")) {
+                    if (pathParts[2].equals(EPIC_REQUEST)) {
                         Epic epic = gson.fromJson(body, Epic.class);
                         taskManager.addEpic(epic);
-                        sendText(exchange, "Эпик успешно добавлен.", 201);
+                        sendText(h, "Эпик успешно добавлен.", 201);
                         break;
                     }
-                    if (pathParts[2].equals("subtask")) {
+                    if (pathParts[2].equals(SUBTASK_REQUEST)) {
                         Subtask subtask = gson.fromJson(body, Subtask.class);
                         taskManager.addSubtask(subtask);
-                        sendText(exchange, "Подзадача успешно добавлена.", 201);
+                        sendText(h, "Подзадача успешно добавлена.", 201);
                         break;
                     }
+                    break;
                 case "DELETE":
-                    if (pathParts[2].equals("task") && query == null) {
+                    if (pathParts[2].equals(TASK_REQUEST) && query == null) {
                         taskManager.taskAllDelete();
-                        sendText(exchange, "Задачи успешно удалены.", 202);
+                        sendText(h, "Задачи успешно удалены.", 202);
                         break;
                     }
-                    if (pathParts[2].equals("epic") && query == null) {
+                    if (pathParts[2].equals(EPIC_REQUEST) && query == null) {
                         taskManager.epicAllDelete();
-                        sendText(exchange, "Епики успешно удалены.", 202);
+                        sendText(h, "Епики успешно удалены.", 202);
                         break;
                     }
-                    if (pathParts[2].equals("subtask") && query == null) {
+                    if (pathParts[2].equals(SUBTASK_REQUEST) && query == null) {
                         taskManager.subtaskAllDelete();
-                        sendText(exchange, "Подзадачи успешно удалены.", 202);
+                        sendText(h, "Подзадачи успешно удалены.", 202);
                         break;
                     }
-                    if (pathParts[2].equals("task") && query.equals("id")) {
-                        idInString = query.replaceFirst("^id=", "");
-                        taskManager.deleteTaskInIds(Integer.parseInt(idInString));
-                        sendText(exchange, "Задача с ID " + idInString + " успешно удалена.", 202);
+                    if (pathParts[2].equals(TASK_REQUEST)) {
+                        taskManager.deleteTaskInIds(taskId);
+                        sendText(h, "Задача с ID " + taskId + " успешно удалена.", 202);
                         break;
                     }
-                    if (pathParts[2].equals("epic") && query.equals("id")) {
-                        idInString = query.replaceFirst("^id=", "");
-                        taskManager.deleteEpicInIds(Integer.parseInt(idInString));
-                        sendText(exchange, "Епик с ID " + idInString + " успешно удален.", 202);
+                    if (pathParts[2].equals(EPIC_REQUEST)) {
+                        taskManager.deleteEpicInIds(taskId);
+                        sendText(h, "Епик с ID " + taskId + " успешно удален.", 202);
                         break;
                     }
-                    if (pathParts[2].equals("subtask") && query.equals("id")) {
-                        idInString = query.replaceFirst("^id=", "");
-                        taskManager.deleteSubTaskInIds(Integer.parseInt(idInString));
-                        sendText(exchange, "Подзадача с ID " + idInString + " успешно удалена.", 202);
+                    if (pathParts[2].equals(SUBTASK_REQUEST)) {
+                        taskManager.deleteSubTaskInIds(taskId);
+                        sendText(h, "Подзадача с ID " + taskId + " успешно удалена.", 202);
                         break;
                     }
+                    break;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            sendText(exchange, "По указанному адресу нет ресурса. Проверьте URL-адрес ресурса и повторите запрос.", 404);
+            sendText(h, "По указанному адресу нет ресурса. Проверьте URL-адрес ресурса и повторите запрос.", 404);
         } catch (JsonParseException e) {
-            sendText(exchange, "При обработке JSON произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 400);
+            sendText(h, "При обработке JSON произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 400);
         } catch (IOException e) {
-            sendText(exchange, "На стороне сервера произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 500);
+            sendText(h, "На стороне сервера произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.", 500);
         }
     }
 
@@ -188,13 +185,5 @@ public class HttpTaskServer {
         httpExchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         httpExchange.sendResponseHeaders(code, textInByte.length);
         httpExchange.getResponseBody().write(textInByte);
-    }
-
-    private int parseTaskId(String idInPath) {
-        try {
-            return Integer.parseInt(idInPath);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
     }
 }
