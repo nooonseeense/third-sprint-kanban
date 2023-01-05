@@ -33,7 +33,6 @@ public class KVTaskClient {
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .uri(uri)
-                .GET()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         try {
