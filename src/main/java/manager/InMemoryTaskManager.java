@@ -255,7 +255,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (!task.getStartTime().isAfter(value.getEndTime())) {
                 continue;
             }
-            if (!task.getEndTime().isAfter(value.getStartTime())) {
+            if (task.getEndTime().isAfter(value.getStartTime())) {
                 continue;
             }
             throw new SearchForTheIntersectionOfTaskException();

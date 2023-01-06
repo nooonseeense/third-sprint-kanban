@@ -1,8 +1,11 @@
 package http_service;
 
 import com.google.gson.*;
+
 import com.sun.net.httpserver.HttpExchange;
+
 import com.sun.net.httpserver.HttpServer;
+
 import manager.Managers;
 import manager.TaskManager;
 import tasks.Epic;
@@ -11,7 +14,6 @@ import tasks.Task;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -21,6 +23,7 @@ public class HttpTaskServer {
     private final HttpServer httpServer;
     private final Gson gson;
     private final TaskManager taskManager;
+
     private static final String TASK_REQUEST = "task";
     private static final String TASKS_REQUEST = "tasks";
     private static final String EPIC_REQUEST = "epic";
@@ -38,10 +41,13 @@ public class HttpTaskServer {
         httpServer.createContext("/" + TASKS_REQUEST, this::handler);
     }
 
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+
     private void handler(HttpExchange h) throws IOException {
-        URI uri = h.getRequestURI();
-        String path = uri.getPath();
-        String query = uri.getQuery();
+        String path = h.getRequestURI().getPath();
+        String query = h.getRequestURI().getQuery();
         String method = h.getRequestMethod();
         String body = readText(h);
         String[] pathParts = path.split("/");
@@ -63,7 +69,7 @@ public class HttpTaskServer {
                     if (pathParts[1].equals(TASKS_REQUEST) && pathParts.length == 2) {
                         if (h.getRequestBody() != null) {
                             response = gson.toJson(taskManager.getPrioritizedTasks());
-                            sendText(h, gson.toJson(response));
+                            sendText(h, response);
                         }
                         return;
                     }
@@ -77,16 +83,19 @@ public class HttpTaskServer {
                         sendText(h, response);
                         return;
                     }
-                    if (pathParts[2].equals(SUBTASK_REQUEST) && pathParts[3].equals(EPIC_REQUEST)) {
-                        response = gson.toJson(taskManager.getEpicSubtasksList(taskId));
-                        sendText(h, response);
-                        return;
+                    if (pathParts.length > 3) {
+                        if (pathParts[3].equals(EPIC_REQUEST) && query != null) {
+                            response = gson.toJson(taskManager.getEpicSubtasksList(taskId));
+                            sendText(h, response);
+                            return;
+                        }
                     }
                     if (pathParts[2].equals(SUBTASK_REQUEST) && query == null) {
                         response = gson.toJson(taskManager.getSubtasks());
                         sendText(h, response);
                         return;
                     }
+
                     if (pathParts[2].equals(SUBTASK_REQUEST)) {
                         response = gson.toJson(taskManager.getSubtaskById(taskId));
                         sendText(h, response);
@@ -113,7 +122,7 @@ public class HttpTaskServer {
                         Task task = gson.fromJson(body, Task.class);
                         taskManager.addTask(task);
                         System.out.println("<SYSTEM>: Задача создана");
-                        h.sendResponseHeaders(200, 0);
+                        h.sendResponseHeaders(201, 0);
                         return;
                     }
                     if (pathParts[2].equals(EPIC_REQUEST)) {
@@ -179,8 +188,10 @@ public class HttpTaskServer {
         } catch (IOException e) {
             System.out.println("<SYSTEM>: На стороне сервера произошла непредвиденная ошибка. Проверьте параметры и повторите запрос.");
             h.sendResponseHeaders(500, 0);
+        } finally {
+            h.close();
         }
-     }
+    }
 
     public void start() {
         System.out.println("<SYSTEM>: Started TaskServer in PORT: " + PORT);
