@@ -85,13 +85,22 @@ public class InMemoryTaskManager implements TaskManager {
         if (searchForTheIntersectionOfTask(subtask)) {
             return;
         }
-        sortedListTasksAndSubtasks.remove(subtasks.get(subtask.getId()));
+
+        Subtask newSubtask = subtasks.get(subtask.getId());
+
+        if (newSubtask != null) {
+            sortedListTasksAndSubtasks.remove(newSubtask);
+        }
+
         subtasks.put(subtask.getId(), subtask);
         sortedListTasksAndSubtasks.add(subtask);
 
         Epic epic = epics.get(subtask.getEpicId());
-        updateEpicStatus(epic);
-        calculateStartAndEndTimeEpic(epic);
+
+        if (epic != null ) {
+            updateEpicStatus(epic);
+            calculateStartAndEndTimeEpic(epic);
+        }
     }
 
     @Override

@@ -5,15 +5,12 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import manager.FileBackedTaskManager;
 import manager.Managers;
-import tasks.Epic;
-import tasks.Subtask;
 import tasks.Task;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTaskManager {
@@ -61,35 +58,39 @@ public class HttpTaskManager extends FileBackedTaskManager {
     }
 
     public void load() {
-        Type hashMapType = new TypeToken<HashMap<Integer, Task>>() {
-        }.getType();
-        Type listType = new TypeToken<ArrayList<Task>>() {
+        Type taskType = new TypeToken<ArrayList<Task>>() {
         }.getType();
 
         try {
-            HashMap<Integer, Task> tasksFromKVServer = gson.fromJson(client.load(TASKS_KEY), hashMapType);
+            ArrayList<Task> tasksFromKVServer = gson.fromJson(client.load(TASKS_KEY), taskType);
             if (tasksFromKVServer != null && !tasksFromKVServer.isEmpty()) {
-                tasks.putAll(tasksFromKVServer);
+                for (Task task : tasksFromKVServer) {
+                    tasks.put(task.getId(), task);
+                }
             }
 
-            HashMap<Integer, Epic> epicsFromKVServer = gson.fromJson(client.load(EPICS_KEY), hashMapType);
+            ArrayList<Task> epicsFromKVServer = gson.fromJson(client.load(EPICS_KEY), taskType);
             if (epicsFromKVServer != null && !epicsFromKVServer.isEmpty()) {
-                epics.putAll(epicsFromKVServer);
+                for (Task epic : epicsFromKVServer) {
+                    tasks.put(epic.getId(), epic);
+                }
             }
 
-            HashMap<Integer, Subtask> subtasksFromKVServer = gson.fromJson(client.load(SUBTASKS_KEY), hashMapType);
+            ArrayList<Task> subtasksFromKVServer = gson.fromJson(client.load(SUBTASKS_KEY), taskType);
             if (subtasksFromKVServer != null && !subtasksFromKVServer.isEmpty()) {
-                subtasks.putAll(subtasksFromKVServer);
+                for (Task subtask : subtasksFromKVServer) {
+                    tasks.put(subtask.getId(), subtask);
+                }
             }
 
-            List<Task> historyFromKVServer = gson.fromJson(client.load(HISTORY_KEY), listType);
+            List<Task> historyFromKVServer = gson.fromJson(client.load(HISTORY_KEY), taskType);
             if (historyFromKVServer != null && !historyFromKVServer.isEmpty()) {
                 for (Task task : historyFromKVServer) {
                     historyManager.add(task);
                 }
             }
 
-            List<Task> prioritizedTasksFromKVServer = gson.fromJson(client.load(PRIORITIZED_TASKS_KEY), listType);
+            List<Task> prioritizedTasksFromKVServer = gson.fromJson(client.load(PRIORITIZED_TASKS_KEY), taskType);
             if (prioritizedTasksFromKVServer != null && !prioritizedTasksFromKVServer.isEmpty()) {
                 sortedListTasksAndSubtasks.addAll(prioritizedTasksFromKVServer);
             }

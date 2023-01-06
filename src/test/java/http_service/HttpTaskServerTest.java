@@ -23,8 +23,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HttpTaskServerTest {
     private HttpTaskServer taskServer;
@@ -386,5 +385,78 @@ public class HttpTaskServerTest {
         assertEquals(0, taskManager.getHistory().size(), "Task has not been deleted in history");
 
         assertEquals(202, response.statusCode());
+    }
+
+    @Test
+    void updateTaskTest() throws IOException, InterruptedException {
+        Task task = new Task("TASK", "TASK_DESCRIPTION", Status.NEW, 60,
+                LocalDateTime.of(2023, Month.DECEMBER, 2, 14, 30));
+        taskManager.addTask(task);
+
+        task = new Task("TASK", "NEW_TASK_DESCRIPTION", Status.NEW, 60,
+                LocalDateTime.of(2024, Month.NOVEMBER, 2, 14, 30));
+
+        String taskJson = gson.toJson(task);
+
+        URI url = URI.create("http://localhost:8080/tasks/task/?id=" + task.getId());
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+
+        Task newTask = taskManager.getTaskById(task.getId());
+
+        assertEquals(201, response.statusCode());
+        assertEquals(newTask.getStartTime(), task.getStartTime(), "Задача не была обновлена");
+    }
+
+    @Test
+    void updateEpicTest() throws IOException, InterruptedException {
+        Epic epic = new Epic("Epic", "Epic description");
+        taskManager.addTask(epic);
+
+        Subtask subtask = new Subtask("Subtask", "Subtask description", Status.NEW, 60,
+                LocalDateTime.of(2022, Month.NOVEMBER, 8, 19, 30), epic.getId());
+        taskManager.addSubtask(subtask);
+
+        epic = new Epic("Epic", "NEW_Epic description");
+
+        Subtask subtask2 = new Subtask("Subtask", "Subtask description", Status.NEW, 60,
+                LocalDateTime.of(2023, Month.JUNE, 7, 18, 30), epic.getId());
+        taskManager.addSubtask(subtask2);
+
+        String taskJson = gson.toJson(epic);
+
+        URI url = URI.create("http://localhost:8080/tasks/epic/?id=" + epic.getId());
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Task newEpic = taskManager.getEpicById(epic.getId());
+
+        assertEquals(201, response.statusCode());
+        assertEquals(newEpic.getStartTime(), epic.getStartTime(), "Эпик не был обновлен");
+    }
+
+    @Test
+    void updateSubtaskTest() throws IOException, InterruptedException {
+        Epic epic = new Epic("Epic", "Epic description");
+        taskManager.addEpic(epic);
+
+        Subtask subtask = new Subtask("Subtask", "Subtask description", Status.NEW, 60,
+                LocalDateTime.of(2022, Month.NOVEMBER, 8, 19, 30), epic.getId());
+        taskManager.addSubtask(subtask);
+
+        subtask = new Subtask("Subtask", "NEW_Subtask description", Status.NEW, 180,
+                LocalDateTime.of(2022, Month.DECEMBER, 8, 19, 30), epic.getId());
+
+        String taskJson = gson.toJson(subtask);
+
+        URI url = URI.create("http://localhost:8080/tasks/subtask/?id=1");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Task newSubtask = taskManager.getSubtaskById(subtask.getId());
+
+        assertEquals(201, response.statusCode());
+        assertEquals(newSubtask.getDuration(), subtask.getDuration(), "Подзадача не была обновлена");
     }
 }

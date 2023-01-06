@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import com.sun.net.httpserver.HttpServer;
 
+import constants.Status;
 import manager.Managers;
 import manager.TaskManager;
 import tasks.Epic;
@@ -15,6 +16,8 @@ import tasks.Task;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.Month;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -31,7 +34,22 @@ public class HttpTaskServer {
     private static final String HISTORY_REQUEST = "history";
 
     public static void main(String[] args) throws IOException {
-        new HttpTaskServer().start();
+        HttpTaskServer server = new HttpTaskServer();
+        server.start();
+        TaskManager taskManager = server.getTaskManager();
+
+        Task task1 = new Task("Задача", "Описание", Status.NEW, 60,
+                LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
+        taskManager.addTask(task1);
+        taskManager.getTaskById(task1.getId());
+
+        Epic epic1 = new Epic("Епик", "Описание");
+        taskManager.addEpic(epic1);
+        taskManager.getEpicById(epic1.getId());
+
+        Subtask subtask1 = new Subtask("Подзадача", "Описание", Status.IN_PROGRESS, epic1.getId());
+        taskManager.addSubtask(subtask1);
+        taskManager.getSubtaskById(subtask1.getId());;
     }
 
     public HttpTaskServer() throws IOException {
@@ -120,22 +138,37 @@ public class HttpTaskServer {
                 case "POST":
                     if (pathParts[2].equals(TASK_REQUEST)) {
                         Task task = gson.fromJson(body, Task.class);
-                        taskManager.addTask(task);
-                        System.out.println("<SYSTEM>: Задача создана");
+                        if (taskId >= 0 && query != null) {
+                            taskManager.updateTask(task);
+                            System.out.println("<SYSTEM>: Задача обновлена");
+                        } else {
+                            taskManager.addTask(task);
+                            System.out.println("<SYSTEM>: Задача создана");
+                        }
                         h.sendResponseHeaders(201, 0);
                         return;
                     }
                     if (pathParts[2].equals(EPIC_REQUEST)) {
                         Epic epic = gson.fromJson(body, Epic.class);
-                        taskManager.addEpic(epic);
-                        System.out.println("<SYSTEM>: Эпик создан");
+                        if (taskId >= 0 && query != null) {
+                            taskManager.updateEpic(epic);
+                            System.out.println("<SYSTEM>: Эпик обновлен");
+                        } else {
+                            taskManager.addEpic(epic);
+                            System.out.println("<SYSTEM>: Эпик создан");
+                        }
                         h.sendResponseHeaders(201, 0);
                         return;
                     }
                     if (pathParts[2].equals(SUBTASK_REQUEST)) {
                         Subtask subtask = gson.fromJson(body, Subtask.class);
-                        taskManager.addSubtask(subtask);
-                        System.out.println("<SYSTEM>: Подзадача создана");
+                        if (taskId >= 0 && query != null) {
+                            taskManager.updateSubtasks(subtask);
+                            System.out.println("<SYSTEM>: Подзадача обновлена");
+                        } else {
+                            taskManager.addSubtask(subtask);
+                            System.out.println("<SYSTEM>: Подзадача создана");
+                        }
                         h.sendResponseHeaders(201, 0);
                         return;
                     }
