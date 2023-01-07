@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Task implements Comparable<Task> {
     protected String name;
     protected String description;
-    protected int id;
+    protected Integer id;
     protected Status status;
     protected int duration;
     protected LocalDateTime startTime;
@@ -44,7 +44,7 @@ public class Task implements Comparable<Task> {
     /**
      * Конструктор для метода public Task fromString(String value)
      */
-    public Task(int id,
+    public Task(Integer id,
                 String name,
                 Status status,
                 String description,
@@ -60,11 +60,11 @@ public class Task implements Comparable<Task> {
         this.endTime = endTime;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

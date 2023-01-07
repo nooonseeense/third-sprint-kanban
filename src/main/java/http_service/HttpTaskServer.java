@@ -53,7 +53,7 @@ public class HttpTaskServer {
     }
 
     public HttpTaskServer() throws IOException {
-        taskManager = Managers.getDefaultTask();
+        taskManager = Managers.getDefaultTask(true);
         gson = Managers.getGson();
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/" + TASKS_REQUEST, this::handler);
@@ -67,14 +67,12 @@ public class HttpTaskServer {
         String path = h.getRequestURI().getPath();
         String query = h.getRequestURI().getQuery();
         String method = h.getRequestMethod();
-        String body = readText(h);
         String[] pathParts = path.split("/");
         String response;
         int taskId = 0;
 
         if (query != null) {
             taskId = parsePathId(query.replaceFirst("^id=", ""));
-
             if (taskId == -1) {
                 System.out.println("<SYSTEM>: Получен некорректный id = " + taskId);
                 h.sendResponseHeaders(405, 0);
@@ -98,7 +96,11 @@ public class HttpTaskServer {
                     }
                     if (pathParts[2].equals(TASK_REQUEST)) {
                         response = gson.toJson(taskManager.getTaskById(taskId));
-                        sendText(h, response);
+                        if (response.isEmpty()) {
+                            h.sendResponseHeaders(404, 0);
+                        } else {
+                            sendText(h, response);
+                        }
                         return;
                     }
                     if (pathParts.length > 3) {
@@ -113,10 +115,13 @@ public class HttpTaskServer {
                         sendText(h, response);
                         return;
                     }
-
                     if (pathParts[2].equals(SUBTASK_REQUEST)) {
                         response = gson.toJson(taskManager.getSubtaskById(taskId));
-                        sendText(h, response);
+                        if (response.isEmpty()) {
+                            h.sendResponseHeaders(404, 0);
+                        } else {
+                            sendText(h, response);
+                        }
                         return;
                     }
                     if (pathParts[2].equals(EPIC_REQUEST) && query == null) {
@@ -126,7 +131,11 @@ public class HttpTaskServer {
                     }
                     if (pathParts[2].equals(EPIC_REQUEST)) {
                         response = gson.toJson(taskManager.getEpicById(taskId));
-                        sendText(h, response);
+                        if (response.isEmpty()) {
+                            h.sendResponseHeaders(404, 0);
+                        } else {
+                            sendText(h, response);
+                        }
                         return;
                     }
                     if (pathParts[2].equals(HISTORY_REQUEST)) {
@@ -136,9 +145,14 @@ public class HttpTaskServer {
                     }
                     break;
                 case "POST":
+                    String body = readText(h);
+                    if (body.isEmpty()) {
+                        h.sendResponseHeaders(400, 0);
+                        return;
+                    }
                     if (pathParts[2].equals(TASK_REQUEST)) {
                         Task task = gson.fromJson(body, Task.class);
-                        if (taskId >= 0 && query != null) {
+                        if (task.getId() != null) {
                             taskManager.updateTask(task);
                             System.out.println("<SYSTEM>: Задача обновлена");
                         } else {
@@ -150,7 +164,7 @@ public class HttpTaskServer {
                     }
                     if (pathParts[2].equals(EPIC_REQUEST)) {
                         Epic epic = gson.fromJson(body, Epic.class);
-                        if (taskId >= 0 && query != null) {
+                        if (epic.getId() != null) {
                             taskManager.updateEpic(epic);
                             System.out.println("<SYSTEM>: Эпик обновлен");
                         } else {
@@ -162,7 +176,7 @@ public class HttpTaskServer {
                     }
                     if (pathParts[2].equals(SUBTASK_REQUEST)) {
                         Subtask subtask = gson.fromJson(body, Subtask.class);
-                        if (taskId >= 0 && query != null) {
+                        if (subtask.getId() != null) {
                             taskManager.updateSubtasks(subtask);
                             System.out.println("<SYSTEM>: Подзадача обновлена");
                         } else {
@@ -183,34 +197,36 @@ public class HttpTaskServer {
                     if (pathParts[2].equals(EPIC_REQUEST) && query == null) {
                         taskManager.epicAllDelete();
                         System.out.println("<SYSTEM>: Список эпиков очищен");
-                        h.sendResponseHeaders(202, 0);
+                        h.sendResponseHeaders(204, 0);
                         return;
                     }
                     if (pathParts[2].equals(SUBTASK_REQUEST) && query == null) {
                         taskManager.subtaskAllDelete();
                         System.out.println("<SYSTEM>: Список подзадач очищен");
-                        h.sendResponseHeaders(202, 0);
+                        h.sendResponseHeaders(204, 0);
                         return;
                     }
                     if (pathParts[2].equals(TASK_REQUEST)) {
                         taskManager.deleteTaskInIds(taskId);
                         System.out.println("<SYSTEM>: Задача удалена, id = " + taskId);
-                        h.sendResponseHeaders(202, 0);
+                        h.sendResponseHeaders(204, 0);
                         return;
                     }
                     if (pathParts[2].equals(EPIC_REQUEST)) {
                         taskManager.deleteEpicInIds(taskId);
                         System.out.println("<SYSTEM>: Эпик удален, id = " + taskId);
-                        h.sendResponseHeaders(202, 0);
+                        h.sendResponseHeaders(204, 0);
                         return;
                     }
                     if (pathParts[2].equals(SUBTASK_REQUEST)) {
                         taskManager.deleteSubTaskInIds(taskId);
                         System.out.println("<SYSTEM>: Подзадача удалена, id = " + taskId);
-                        h.sendResponseHeaders(202, 0);
+                        h.sendResponseHeaders(204, 0);
                         return;
                     }
                     break;
+                default:
+                    h.sendResponseHeaders(405, 0);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("<SYSTEM>: По указанному адресу нет ресурса. Проверьте URL-адрес ресурса и повторите запрос.");

@@ -21,7 +21,7 @@ public class Subtask extends Task {
         endTime = getEndTime();
     }
     // Конструктор для метода public Task fromString(String value)
-    public Subtask(int id,
+    public Subtask(Integer id,
                    String name,
                    Status status,
                    String description,

@@ -16,8 +16,8 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static TaskManager getDefaultTask() throws IOException {
-        return new HttpTaskManager(new URL("http://localhost"));
+    public static TaskManager getDefaultTask(boolean isLoad) throws IOException {
+        return new HttpTaskManager(new URL("http://localhost"), isLoad);
     }
 
     public static Gson getGson() {

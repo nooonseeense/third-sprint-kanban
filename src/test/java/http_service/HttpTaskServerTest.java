@@ -314,7 +314,7 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(0, taskManager.getEpics().size(), "List is not empty");
-        assertEquals(202, response.statusCode());
+        assertEquals(204, response.statusCode());
     }
 
     @Test
@@ -332,7 +332,7 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(0, taskManager.getSubtasks().size(), "List is not empty");
-        assertEquals(202, response.statusCode());
+        assertEquals(204, response.statusCode());
     }
 
     @Test
@@ -348,7 +348,7 @@ public class HttpTaskServerTest {
         assertEquals(0, taskManager.getTasks().size(), "Task has not been deleted");
         assertEquals(0, taskManager.getHistory().size(), "Task has not been deleted in history");
 
-        assertEquals(202, response.statusCode());
+        assertEquals(204, response.statusCode());
     }
 
     @Test
@@ -364,7 +364,7 @@ public class HttpTaskServerTest {
         assertEquals(0, taskManager.getEpics().size(), "Task has not been deleted");
         assertEquals(0, taskManager.getHistory().size(), "Task has not been deleted in history");
 
-        assertEquals(202, response.statusCode());
+        assertEquals(204, response.statusCode());
     }
 
     @Test
@@ -384,7 +384,7 @@ public class HttpTaskServerTest {
         assertEquals(0, taskManager.getSubtasks().size(), "Task has not been deleted");
         assertEquals(0, taskManager.getHistory().size(), "Task has not been deleted in history");
 
-        assertEquals(202, response.statusCode());
+        assertEquals(204, response.statusCode());
     }
 
     @Test
@@ -393,15 +393,15 @@ public class HttpTaskServerTest {
                 LocalDateTime.of(2023, Month.DECEMBER, 2, 14, 30));
         taskManager.addTask(task);
 
-        task = new Task("TASK", "NEW_TASK_DESCRIPTION", Status.NEW, 60,
-                LocalDateTime.of(2024, Month.NOVEMBER, 2, 14, 30));
+        task = new Task(task.getId(),"TASK", Status.NEW, "TASK_DESCRIPTION", 60,
+                LocalDateTime.now(),
+                LocalDateTime.of(2023, Month.DECEMBER, 2, 14, 30));
 
         String taskJson = gson.toJson(task);
 
         URI url = URI.create("http://localhost:8080/tasks/task/?id=" + task.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
 
         Task newTask = taskManager.getTaskById(task.getId());
 
@@ -418,7 +418,14 @@ public class HttpTaskServerTest {
                 LocalDateTime.of(2022, Month.NOVEMBER, 8, 19, 30), epic.getId());
         taskManager.addSubtask(subtask);
 
-        epic = new Epic("Epic", "NEW_Epic description");
+        epic = new Epic(
+                epic.getId(),
+                "Epic",
+                epic.getStatus(),
+                "Epic description",
+                epic.getDuration() + 180,
+                epic.getStartTime(),
+                epic.getEndTime());
 
         Subtask subtask2 = new Subtask("Subtask", "Subtask description", Status.NEW, 60,
                 LocalDateTime.of(2023, Month.JUNE, 7, 18, 30), epic.getId());
@@ -446,11 +453,12 @@ public class HttpTaskServerTest {
         taskManager.addSubtask(subtask);
 
         subtask = new Subtask("Subtask", "NEW_Subtask description", Status.NEW, 180,
-                LocalDateTime.of(2022, Month.DECEMBER, 8, 19, 30), epic.getId());
+                LocalDateTime.of(2023, Month.DECEMBER, 9, 19, 30), epic.getId());
+        subtask.setId(1);
 
         String taskJson = gson.toJson(subtask);
 
-        URI url = URI.create("http://localhost:8080/tasks/subtask/?id=1");
+        URI url = URI.create("http://localhost:8080/tasks/subtask/?id=" + subtask.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

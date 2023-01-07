@@ -1,5 +1,7 @@
 package http_service;
 
+import exceptions.HttpServerConnectException;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -17,15 +19,7 @@ public class KVTaskClient {
     public KVTaskClient(URL url) {
         this.url = url;
         client = HttpClient.newHttpClient();
-        URI uri = URI.create(url + ":" + KVServer.PORT + "/register");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
-
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            apiToken = new String(response.body().getBytes(), UTF_8);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        register();
     }
 
     public void put(String key, String json) {
@@ -36,15 +30,43 @@ public class KVTaskClient {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+            if (response.statusCode() != 200) {
+                throw new HttpServerConnectException();
+            }
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            throw new HttpServerConnectException();
         }
     }
 
     public String load(String key) throws IOException, InterruptedException {
         URI uri = URI.create(url + ":" + KVServer.PORT + "/load/" + key + "/?API_TOKEN=" + apiToken);
         HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
-        return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 400) {
+                return response.body();
+            }
+            if (response.statusCode() != 200) {
+                throw new HttpServerConnectException();
+            }
+            return response.body();
+        } catch (IOException | InterruptedException e) {
+            throw new HttpServerConnectException();
+        }
+    }
+
+    private void register() {
+        URI uri = URI.create(url + ":" + KVServer.PORT + "/register");
+        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new HttpServerConnectException();
+            }
+            apiToken = new String(response.body().getBytes(), UTF_8);
+        } catch (IOException | InterruptedException e) {
+            throw new HttpServerConnectException();
+        }
     }
 }

@@ -258,7 +258,7 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         }
         for (Task value : sortedListTasksAndSubtasks) {
-            if (value.getStartTime() == null || value.getId() == task.getId()) {
+            if (value.getStartTime() == null || value.getId().equals(task.getId())) {
                 continue;
             }
             if (!task.getStartTime().isAfter(value.getEndTime())) {
