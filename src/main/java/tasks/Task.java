@@ -126,7 +126,7 @@ public class Task implements Comparable<Task> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id
+        return Objects.equals(id, task.id)
                 && duration == task.duration
                 && Objects.equals(name, task.name)
                 && Objects.equals(description, task.description)

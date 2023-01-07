@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpExchange;
 
 import com.sun.net.httpserver.HttpServer;
 
-import constants.Status;
 import manager.Managers;
 import manager.TaskManager;
 import tasks.Epic;
@@ -16,22 +15,19 @@ import tasks.Task;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.Month;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpTaskServer {
-    public static final int PORT = 8080;
-    private final HttpServer httpServer;
-    private final Gson gson;
-    private final TaskManager taskManager;
-
     private static final String TASK_REQUEST = "task";
     private static final String TASKS_REQUEST = "tasks";
     private static final String EPIC_REQUEST = "epic";
     private static final String SUBTASK_REQUEST = "subtask";
     private static final String HISTORY_REQUEST = "history";
+    public static final int PORT = 8080;
+    private final HttpServer httpServer;
+    private final Gson gson;
+    private final TaskManager taskManager;
 
     public HttpTaskServer() throws IOException {
         taskManager = Managers.getDefaultTask(true);

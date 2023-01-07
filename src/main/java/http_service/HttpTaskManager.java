@@ -6,7 +6,6 @@ import manager.FileBackedTaskManager;
 import manager.Managers;
 import tasks.Task;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,15 +19,11 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private static final String EPICS_KEY = "epics";
     private static final String SUBTASKS_KEY = "subtasks";
     private static final String HISTORY_KEY = "history";
-    private static final String PRIORITIZED_TASKS_KEY = "prioritizedTasks";
     private static final String LAST_TASK_ID_KEY = "lastTaskId";
-
     private final KVTaskClient client;
     private final Gson gson;
-    private final URL url;
 
     public HttpTaskManager(URL url, boolean isLoad) {
-        this.url = url;
         this.client = new KVTaskClient(url);
         this.gson = Managers.getGson();
 
@@ -61,51 +56,39 @@ public class HttpTaskManager extends FileBackedTaskManager {
         Type taskTypeInteger = new TypeToken<ArrayList<Integer>>() {
         }.getType();
 
-        try {
-            Map<Integer, Task> tempStorageOfTasks = new HashMap<>();
-            ArrayList<Task> tasksFromKVServer = gson.fromJson(client.load(TASKS_KEY), taskType);
-
-            if (tasksFromKVServer != null) {
-                for (Task task : tasksFromKVServer) {
-                    tasks.put(task.getId(), task);
-                    tempStorageOfTasks.put(task.getId(), task);
-                }
+        Map<Integer, Task> tempStorageOfTasks = new HashMap<>();
+        ArrayList<Task> tasksFromKVServer = gson.fromJson(client.load(TASKS_KEY), taskType);
+        if (tasksFromKVServer != null) {
+            for (Task task : tasksFromKVServer) {
+                tasks.put(task.getId(), task);
+                tempStorageOfTasks.put(task.getId(), task);
+                sortedListTasksAndSubtasks.add(task);
             }
-
-            ArrayList<Task> epicsFromKVServer = gson.fromJson(client.load(EPICS_KEY), taskType);
-            if (epicsFromKVServer != null) {
-                for (Task epic : epicsFromKVServer) {
-                    tasks.put(epic.getId(), epic);
-                    tempStorageOfTasks.put(epic.getId(), epic);
-                }
+        }
+        ArrayList<Task> epicsFromKVServer = gson.fromJson(client.load(EPICS_KEY), taskType);
+        if (epicsFromKVServer != null) {
+            for (Task epic : epicsFromKVServer) {
+                tasks.put(epic.getId(), epic);
+                tempStorageOfTasks.put(epic.getId(), epic);
             }
-
-            ArrayList<Task> subtasksFromKVServer = gson.fromJson(client.load(SUBTASKS_KEY), taskType);
-            if (subtasksFromKVServer != null) {
-                for (Task subtask : subtasksFromKVServer) {
-                    tasks.put(subtask.getId(), subtask);
-                    tempStorageOfTasks.put(subtask.getId(), subtask);
-                }
+        }
+        ArrayList<Task> subtasksFromKVServer = gson.fromJson(client.load(SUBTASKS_KEY), taskType);
+        if (subtasksFromKVServer != null) {
+            for (Task subtask : subtasksFromKVServer) {
+                tasks.put(subtask.getId(), subtask);
+                tempStorageOfTasks.put(subtask.getId(), subtask);
+                sortedListTasksAndSubtasks.add(subtask);
             }
-
-            List<Integer> historyFromKVServer = gson.fromJson(client.load(HISTORY_KEY), taskTypeInteger);
-            if (historyFromKVServer != null) {
-                for (Integer taskId : historyFromKVServer) {
-                    historyManager.add(tempStorageOfTasks.get(taskId));
-                }
+        }
+        List<Integer> historyFromKVServer = gson.fromJson(client.load(HISTORY_KEY), taskTypeInteger);
+        if (historyFromKVServer != null) {
+            for (Integer taskId : historyFromKVServer) {
+                historyManager.add(tempStorageOfTasks.get(taskId));
             }
-
-            List<Task> prioritizedTasksFromKVServer = gson.fromJson(client.load(PRIORITIZED_TASKS_KEY), taskType);
-            if (prioritizedTasksFromKVServer != null) {
-                sortedListTasksAndSubtasks.addAll(prioritizedTasksFromKVServer);
-            }
-
-            Integer lastTaskId = gson.fromJson(client.load(LAST_TASK_ID_KEY), Integer.class);
-            if (lastTaskId != null) {
-                setGenerator(lastTaskId);
-            }
-        } catch (IOException | InterruptedException e) { // Яша, почему обработка не требуется?
-            e.printStackTrace();
+        }
+        Integer lastTaskId = gson.fromJson(client.load(LAST_TASK_ID_KEY), Integer.class);
+        if (lastTaskId != null) {
+            setGenerator(lastTaskId);
         }
     }
 }
