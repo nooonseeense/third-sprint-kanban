@@ -56,4 +56,6 @@ public interface TaskManager {
     List<Task> getAllTasks();
 
     List<Task> getHistory();
+
+    int getGenerator();
 }

@@ -33,25 +33,6 @@ public class HttpTaskServer {
     private static final String SUBTASK_REQUEST = "subtask";
     private static final String HISTORY_REQUEST = "history";
 
-    public static void main(String[] args) throws IOException {
-        HttpTaskServer server = new HttpTaskServer();
-        server.start();
-        TaskManager taskManager = server.getTaskManager();
-
-        Task task1 = new Task("Задача", "Описание", Status.NEW, 60,
-                LocalDateTime.of(2022, Month.NOVEMBER, 2, 14, 30));
-        taskManager.addTask(task1);
-        taskManager.getTaskById(task1.getId());
-
-        Epic epic1 = new Epic("Епик", "Описание");
-        taskManager.addEpic(epic1);
-        taskManager.getEpicById(epic1.getId());
-
-        Subtask subtask1 = new Subtask("Подзадача", "Описание", Status.IN_PROGRESS, epic1.getId());
-        taskManager.addSubtask(subtask1);
-        taskManager.getSubtaskById(subtask1.getId());;
-    }
-
     public HttpTaskServer() throws IOException {
         taskManager = Managers.getDefaultTask(true);
         gson = Managers.getGson();
